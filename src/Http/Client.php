@@ -2,6 +2,7 @@
 
 namespace TransVoucher\Http;
 
+use TransVoucher\TransVoucher;
 use GuzzleHttp\Client as GuzzleClient;
 use GuzzleHttp\Exception\RequestException;
 use GuzzleHttp\Exception\ConnectException;
@@ -123,7 +124,7 @@ class Client
     private function makeRequest(string $method, string $endpoint, array $options = []): array
     {
         try {
-            $response = $this->httpClient->request($method, $endpoint, $options);
+            $response = $this->httpClient->request($method, '/' . TransVoucher::API_VERSION . $endpoint, $options);
             return $this->handleResponse($response);
         } catch (ConnectException $e) {
             throw new TransVoucherException(

@@ -110,7 +110,7 @@ class PaymentService
 
         // Validate currency if provided
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR', 'GBP'];
+            $validCurrencies = ['USD', 'EUR'];
             if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
                 throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
             }
@@ -126,16 +126,43 @@ class PaymentService
             throw new InvalidRequestException('Invalid redirect URL');
         }
 
-        if (isset($params['close_url']) && !filter_var($params['close_url'], FILTER_VALIDATE_URL)) {
-            throw new InvalidRequestException('Invalid close URL');
-        }
-
         // Validate language if provided
         if (isset($params['lang'])) {
             $validLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko'];
             if (!in_array($params['lang'], $validLanguages)) {
                 throw new InvalidRequestException('Language must be one of: ' . implode(', ', $validLanguages));
             }
+        }
+
+        // Validate title length if provided
+        if (isset($params['title']) && strlen($params['title']) > 255) {
+            throw new InvalidRequestException('Title must not exceed 255 characters');
+        }
+
+        // Validate description length if provided
+        if (isset($params['description']) && strlen($params['description']) > 1000) {
+            throw new InvalidRequestException('Description must not exceed 1000 characters');
+        }
+
+        // Validate expiration date if provided
+        if (isset($params['expires_at'])) {
+            $expiresAt = strtotime($params['expires_at']);
+            if ($expiresAt === false || $expiresAt <= time()) {
+                throw new InvalidRequestException('Expiration date must be in the future');
+            }
+        }
+
+        // Validate customer commission percentage if provided
+        if (isset($params['customer_commission_percentage'])) {
+            $commission = $params['customer_commission_percentage'];
+            if (!is_numeric($commission) || $commission < 0) {
+                throw new InvalidRequestException('Customer commission percentage must be a non-negative number');
+            }
+        }
+
+        // Validate custom fields if provided
+        if (isset($params['custom_fields']) && !is_array($params['custom_fields'])) {
+            throw new InvalidRequestException('Custom fields must be an array');
         }
     }
 

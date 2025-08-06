@@ -97,4 +97,9 @@ class PaymentList
     {
         return $this->next_page_token;
     }
+
+    public function getPayments(): ?array
+    {
+        return $this->payments;
+    }
 } 

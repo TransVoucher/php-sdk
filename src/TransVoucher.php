@@ -12,6 +12,8 @@ use TransVoucher\Http\Client;
  */
 class TransVoucher
 {
+    public const string API_VERSION = 'v1.0';
+
     /**
      * @var Client
      */
@@ -109,21 +111,41 @@ class TransVoucher
      */
     private function mergeDefaultConfig(array $config): array
     {
+        // Check for environment variables first
+        $envConfig = [
+            'api_key' => getenv('TRANSVOUCHER_API_KEY'),
+            'api_secret' => getenv('TRANSVOUCHER_API_SECRET'),
+            'environment' => getenv('TRANSVOUCHER_ENVIRONMENT'),
+            'base_url' => getenv('TRANSVOUCHER_API_URL'),
+        ];
+
+        // Remove null values from env config
+        $envConfig = array_filter($envConfig, function ($value) {
+            return $value !== false && $value !== null;
+        });
+
         $defaults = [
             'environment' => 'production',
             'timeout' => 30,
             'connect_timeout' => 10,
             'user_agent' => 'TransVoucher-PHP-SDK/1.0.0',
-            'base_url' => null, // Will be set based on environment
+            'base_url' => null,
         ];
 
-        $merged = array_merge($defaults, $config);
+        // Merge in order of precedence: defaults -> env -> explicit config
+        $merged = array_merge($defaults, $envConfig, $config);
 
         // Set base URL based on environment if not explicitly provided
         if (!$merged['base_url']) {
             $merged['base_url'] = $merged['environment'] === 'sandbox' 
-                ? 'https://sandbox-api.transvoucher.com/v1.0'
-                : 'https://api.transvoucher.com/v1.0';
+                ? 'https://sandbox-api.transvoucher.com/' . self::API_VERSION
+                : 'https://api.transvoucher.com/' . self::API_VERSION;
+        }
+
+        // Ensure base_url doesn't end with a slash and includes API version
+        $merged['base_url'] = rtrim($merged['base_url'], '/');
+        if (!str_ends_with($merged['base_url'], self::API_VERSION)) {
+            $merged['base_url'] .= '/' . self::API_VERSION;
         }
 
         return $merged;

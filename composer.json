@@ -15,6 +15,7 @@
         "ext-json": "*"
     },
     "require-dev": {
+        "orchestra/testbench": "^6.47",
         "phpunit/phpunit": "^9.0",
         "symfony/var-dumper": "^5.0"
     },
@@ -28,13 +29,24 @@
             "TransVoucher\\Tests\\": "tests/"
         }
     },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "TransVoucher\\Laravel\\TransVoucherServiceProvider"
+            ],
+            "aliases": {
+                "TransVoucher": "TransVoucher\\Laravel\\Facades\\TransVoucher"
+            }
+        }
+    },
     "minimum-stability": "stable",
     "keywords": [
         "transvoucher",
         "payment",
         "crypto",
         "api",
-        "sdk"
+        "sdk",
+        "laravel"
     ],
     "homepage": "https://transvoucher.com",
     "support": {
@@ -44,5 +56,8 @@
     "config": {
         "optimize-autoloader": true,
         "sort-packages": true
+    },
+    "scripts": {
+        "test": "vendor/bin/phpunit"
     }
-} 
+}

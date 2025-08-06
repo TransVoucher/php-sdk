@@ -19,7 +19,6 @@ try {
         'currency' => 'USD',
         'customer_email' => 'customer@example.com',
         'redirect_url' => 'https://yourstore.com/success',
-        'close_url' => 'https://yourstore.com/cancel',
         'customer_details' => [
             'name' => 'John Doe',
             'email' => 'john@example.com'

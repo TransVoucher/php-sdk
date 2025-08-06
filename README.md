@@ -37,7 +37,6 @@ $payment = $transvoucher->payments->create([
     'currency' => 'USD',
     'customer_email' => 'customer@example.com',
     'redirect_url' => 'https://yourstore.com/success',
-    'close_url' => 'https://yourstore.com/cancel'
 ]);
 
 // Redirect to payment page
@@ -72,7 +71,6 @@ $payment = $transvoucher->payments->create([
     'currency' => 'USD',
     'customer_email' => 'customer@example.com',
     'redirect_url' => 'https://yourstore.com/success',
-    'close_url' => 'https://yourstore.com/cancel',
     'customer_details' => [
         'name' => 'John Doe',
         'email' => 'john@example.com'
@@ -237,11 +235,13 @@ $client = new TransVoucher([
 #### Create Payment
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (optional): Currency code (USD, EUR, GBP) - default: USD
+- `currency` (optional): Currency code (USD, EUR) - default: USD
 - `customer_email` (optional): Customer email address
-- `redirect_url` (optional): Success redirect URL
-- `close_url` (optional): Cancel/close redirect URL
-- `customer_details` (optional): Customer information object
+- `customer_phone` (optional): Customer phone number
+- `customer_full_name` (optional): Customer full name
+- `customer_date_of_birth` (optional): Customer date of birth (d/M/Y format)
+- `customer_country_of_residence` (optional): Customer country of residence (country code, e.g UK)
+- `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
 - `metadata` (optional): Additional metadata for the payment
 - `theme` (optional): UI theme customization
 - `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko)
@@ -262,6 +262,148 @@ $client = new TransVoucher([
 - **Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
 - **Email**: developers@transvoucher.com
 - **Telegram**: Contact via our support channel
+
+## Laravel Integration
+
+### Installation
+
+The SDK includes built-in Laravel support. After installing via Composer, add the service provider to your `config/app.php` providers array:
+
+```php
+'providers' => [
+    // ...
+    TransVoucher\Laravel\TransVoucherServiceProvider::class,
+],
+```
+
+Add the facade to your aliases array:
+
+```php
+'aliases' => [
+    // ...
+    'TransVoucher' => TransVoucher\Laravel\Facades\TransVoucher::class,
+],
+```
+
+### Configuration
+
+Publish the configuration file:
+
+```bash
+php artisan vendor:publish --provider="TransVoucher\Laravel\TransVoucherServiceProvider" --tag="transvoucher-config"
+```
+
+This will create a `config/transvoucher.php` file. You can also use environment variables in your `.env` file:
+
+```env
+TRANSVOUCHER_API_KEY=your-api-key
+TRANSVOUCHER_API_SECRET=your-api-secret
+TRANSVOUCHER_ENVIRONMENT=sandbox
+TRANSVOUCHER_API_URL=https://custom-api.transvoucher.com/v1.0  # Optional
+```
+
+### Usage with Laravel
+
+Using the Facade:
+
+```php
+use TransVoucher\Laravel\Facades\TransVoucher;
+
+// Create a payment
+$payment = TransVoucher::payments->create([
+    'amount' => 99.99,
+    'currency' => 'USD',
+    'customer_email' => 'customer@example.com',
+]);
+
+// Check payment status
+$status = TransVoucher::payments->status('ref_123');
+
+// List payments
+$payments = TransVoucher::payments->list([
+    'limit' => 10,
+    'status' => 'completed'
+]);
+```
+
+Using Dependency Injection:
+
+```php
+use TransVoucher\TransVoucher;
+
+class PaymentController extends Controller
+{
+    public function store(Request $request, TransVoucher $transvoucher)
+    {
+        $payment = $transvoucher->payments->create([
+            'amount' => $request->amount,
+            'currency' => 'USD',
+        ]);
+
+        return redirect($payment->payment_url);
+    }
+}
+```
+
+### Laravel Webhook Handling
+
+Create a webhook controller:
+
+```php
+use Illuminate\Http\Request;
+use TransVoucher\Laravel\Facades\TransVoucher;
+
+class WebhookController extends Controller
+{
+    public function handle(Request $request)
+    {
+        $payload = $request->all();
+        $signature = $request->header('X-Webhook-Signature');
+
+        if (!$this->verifySignature($payload, $signature)) {
+            abort(400, 'Invalid signature');
+        }
+
+        switch ($payload['type']) {
+            case 'payment.completed':
+                // Handle successful payment
+                $payment = $payload['data'];
+                event(new PaymentCompletedEvent($payment));
+                break;
+
+            case 'payment.failed':
+                // Handle failed payment
+                event(new PaymentFailedEvent($payload['data']));
+                break;
+        }
+
+        return response()->json(['message' => 'Webhook processed']);
+    }
+}
+```
+
+### Testing in Laravel
+
+The SDK includes Laravel-specific test helpers. In your tests:
+
+```php
+use TransVoucher\Laravel\Facades\TransVoucher;
+
+class PaymentTest extends TestCase
+{
+    public function test_can_create_payment()
+    {
+        $payment = TransVoucher::payments->create([
+            'amount' => 99.99,
+            'currency' => 'USD',
+        ]);
+
+        $this->assertNotNull($payment->id);
+        $this->assertEquals(99.99, $payment->amount);
+        $this->assertEquals('USD', $payment->currency);
+    }
+}
+```
 
 ## License
 
