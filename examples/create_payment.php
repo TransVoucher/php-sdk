@@ -20,7 +20,7 @@ try {
         'customer_email' => 'customer@example.com',
         'redirect_url' => 'https://yourstore.com/success',
         'customer_details' => [
-            'name' => 'John Doe',
+            'full_name' => 'John Doe',
             'email' => 'john@example.com'
         ],
         'metadata' => [

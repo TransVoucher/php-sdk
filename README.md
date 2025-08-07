@@ -72,7 +72,7 @@ $payment = $transvoucher->payments->create([
     'customer_email' => 'customer@example.com',
     'redirect_url' => 'https://yourstore.com/success',
     'customer_details' => [
-        'name' => 'John Doe',
+        'full_name' => 'John Doe',
         'email' => 'john@example.com'
     ],
     'metadata' => [
@@ -238,13 +238,14 @@ $client = new TransVoucher([
 - `currency` (optional): Currency code (USD, EUR) - default: USD
 - `customer_email` (optional): Customer email address
 - `customer_phone` (optional): Customer phone number
-- `customer_full_name` (optional): Customer full name
+- `customer_name` (optional): Customer full name
 - `customer_date_of_birth` (optional): Customer date of birth (d/M/Y format)
 - `customer_country_of_residence` (optional): Customer country of residence (country code, e.g UK)
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
 - `metadata` (optional): Additional metadata for the payment
 - `theme` (optional): UI theme customization
 - `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko)
+- `multiple_use` (optional): If payment link is meant for one or multiple payments
 
 #### Payment Status
 
@@ -261,7 +262,7 @@ $client = new TransVoucher([
 
 - **Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
 - **Email**: developers@transvoucher.com
-- **Telegram**: Contact via our support channel
+- **Telegram**: @kevin_tvoucher
 
 ## Laravel Integration
 

@@ -24,14 +24,15 @@ class PaymentTest extends TestCase
         'updated_at' => '2025-08-06T10:00:00Z',
         'customer_details' => [
             'email' => 'test@example.com',
-            'name' => 'Test User'
+            'full_name' => 'Test User'
         ],
         'metadata' => [
             'order_id' => '12345'
         ],
         'payment_details' => [
             'payment_method' => 'card'
-        ]
+        ],
+        'multiple_use' => true,
     ];
 
     public function testCanCreateFromArray()
@@ -53,9 +54,10 @@ class PaymentTest extends TestCase
         $this->assertEquals(2.5, $payment->customer_commission_percentage);
         $this->assertEquals('2025-08-06T10:00:00Z', $payment->created_at);
         $this->assertEquals('2025-08-06T10:00:00Z', $payment->updated_at);
-        $this->assertEquals(['email' => 'test@example.com', 'name' => 'Test User'], $payment->customer_details);
+        $this->assertEquals(['email' => 'test@example.com', 'full_name' => 'Test User'], $payment->customer_details);
         $this->assertEquals(['order_id' => '12345'], $payment->metadata);
         $this->assertEquals(['payment_method' => 'card'], $payment->payment_details);
+        $this->assertEquals(true, $payment->multiple_use);
     }
 
     public function testCanConvertToArray()

@@ -68,6 +68,11 @@ class Payment
     public $customer_commission_percentage;
 
     /**
+     * @var bool|null If payment link is meant for multiple use
+     */
+    public $multiple_use;
+
+    /**
      * @var string|null
      */
     public $created_at;
@@ -126,6 +131,7 @@ class Payment
         $payment->customer_details = $data['customer_details'] ?? null;
         $payment->metadata = $data['metadata'] ?? null;
         $payment->payment_details = $data['payment_details'] ?? null;
+        $payment->multiple_use = $data['multiple_use'] ?? false;
 
         return $payment;
     }
@@ -156,6 +162,7 @@ class Payment
             'customer_details' => $this->customer_details,
             'metadata' => $this->metadata,
             'payment_details' => $this->payment_details,
+            'multiple_use' => $this->multiple_use
         ], function ($value) {
             return $value !== null;
         });
