@@ -25,20 +25,24 @@ try {
 
     // Handle different event types
     switch ($eventType) {
-        case 'payment.completed':
-            handlePaymentCompleted($eventData);
+        case 'payment_intent.created':
+            handlePaymentIntentCreated($eventData);
             break;
             
-        case 'payment.failed':
-            handlePaymentFailed($eventData);
+        case 'payment_intent.succeeded':
+            handlePaymentIntentSucceeded($eventData);
             break;
             
-        case 'payment.refunded':
-            handlePaymentRefunded($eventData);
+        case 'payment_intent.failed':
+            handlePaymentIntentFailed($eventData);
             break;
             
-        case 'settlement.processed':
-            handleSettlementProcessed($eventData);
+        case 'payment_intent.cancelled':
+            handlePaymentIntentCancelled($eventData);
+            break;
+            
+        case 'payment_intent.expired':
+            handlePaymentIntentExpired($eventData);
             break;
             
         default:
@@ -47,12 +51,12 @@ try {
     }
 
     // Alternative way using helper methods
-    if ($webhook->isPaymentCompleted($event)) {
-        // Handle payment completion
-        echo "Payment completed: " . $eventData['reference_id'] . "\n";
-    } elseif ($webhook->isPaymentFailed($event)) {
-        // Handle payment failure
-        echo "Payment failed: " . $eventData['reference_id'] . "\n";
+    if ($webhook->isPaymentIntentSucceeded($event)) {
+        // Handle payment intent completion
+        echo "Payment intent succeeded: " . $eventData['transaction']['reference_id'] . "\n";
+    } elseif ($webhook->isPaymentIntentFailed($event)) {
+        // Handle payment intent failure
+        echo "Payment intent failed: " . $eventData['transaction']['reference_id'] . "\n";
     }
 
     // Return 200 OK to acknowledge receipt
@@ -70,15 +74,35 @@ try {
 }
 
 /**
- * Handle payment completed event
+ * Handle payment intent created event
  */
-function handlePaymentCompleted(array $paymentData): void
+function handlePaymentIntentCreated(array $eventData): void
 {
-    $referenceId = $paymentData['reference_id'];
-    $amount = $paymentData['amount'];
-    $currency = $paymentData['currency'];
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
+    $amount = $transaction['amount'];
+    $currency = $transaction['currency'];
     
-    echo "Processing completed payment: {$referenceId} for {$amount} {$currency}\n";
+    echo "Processing payment intent creation: {$referenceId} for {$amount} {$currency}\n";
+    
+    // Log payment intent
+    // Initialize order status
+    // etc.
+    
+    // Example database update (pseudo-code)
+    // logPaymentIntent($transaction['id'], $referenceId);
+    // initializeOrder($referenceId, $amount, $currency);
+}
+
+/**
+ * Handle payment intent succeeded event
+ */
+function handlePaymentIntentSucceeded(array $eventData): void
+{
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
+    
+    echo "Processing successful payment intent: {$referenceId}\n";
     
     // Update your database
     // Send confirmation email to customer
@@ -86,53 +110,67 @@ function handlePaymentCompleted(array $paymentData): void
     // etc.
     
     // Example database update (pseudo-code)
-    // updateOrderStatus($paymentData['metadata']['order_id'], 'completed');
-    // sendConfirmationEmail($paymentData['customer_details']['email']);
+    // updateOrderStatus($referenceId, 'completed');
+    // if (isset($eventData['customer_details'])) {
+    //     sendConfirmationEmail($eventData['customer_details']);
+    // }
 }
 
 /**
- * Handle payment failed event
+ * Handle payment intent failed event
  */
-function handlePaymentFailed(array $paymentData): void
+function handlePaymentIntentFailed(array $eventData): void
 {
-    $referenceId = $paymentData['reference_id'];
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
     
-    echo "Processing failed payment: {$referenceId}\n";
+    echo "Processing failed payment intent: {$referenceId}\n";
     
     // Update your database
     // Send failure notification
     // etc.
     
     // Example database update (pseudo-code)
-    // updateOrderStatus($paymentData['metadata']['order_id'], 'failed');
-    // sendFailureNotification($paymentData['customer_details']['email']);
+    // updateOrderStatus($referenceId, 'failed');
+    // if (isset($eventData['customer_details'])) {
+    //     sendFailureNotification($eventData['customer_details']);
+    // }
 }
 
 /**
- * Handle payment refunded event
+ * Handle payment intent cancelled event
  */
-function handlePaymentRefunded(array $paymentData): void
+function handlePaymentIntentCancelled(array $eventData): void
 {
-    $referenceId = $paymentData['reference_id'];
-    $amount = $paymentData['amount'];
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
     
-    echo "Processing refunded payment: {$referenceId} for {$amount}\n";
+    echo "Processing cancelled payment intent: {$referenceId}\n";
     
     // Update your database
-    // Send refund confirmation
+    // Handle cancellation
     // etc.
+    
+    // Example database update (pseudo-code)
+    // handleOrderCancellation($referenceId);
+    // releaseInventory($referenceId);
 }
 
 /**
- * Handle settlement processed event
+ * Handle payment intent expired event
  */
-function handleSettlementProcessed(array $settlementData): void
+function handlePaymentIntentExpired(array $eventData): void
 {
-    $transactionId = $settlementData['transaction_id'];
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
     
-    echo "Processing settlement: {$transactionId}\n";
+    echo "Processing expired payment intent: {$referenceId}\n";
     
-    // Update your records
-    // Process crypto settlement
+    // Clean up expired orders
+    // Release inventory
     // etc.
-} 
+    
+    // Example cleanup (pseudo-code)
+    // cleanupExpiredOrder($referenceId);
+    // releaseInventory($referenceId);
+}

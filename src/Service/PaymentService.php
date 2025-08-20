@@ -116,11 +116,6 @@ class PaymentService
             }
         }
 
-        // Validate email if provided
-        if (isset($params['customer_email']) && !filter_var($params['customer_email'], FILTER_VALIDATE_EMAIL)) {
-            throw new InvalidRequestException('Invalid email address');
-        }
-
         // Validate URLs if provided
         if (isset($params['redirect_url']) && !filter_var($params['redirect_url'], FILTER_VALIDATE_URL)) {
             throw new InvalidRequestException('Invalid redirect URL');
@@ -152,17 +147,14 @@ class PaymentService
             }
         }
 
-        // Validate customer commission percentage if provided
-        if (isset($params['customer_commission_percentage'])) {
-            $commission = $params['customer_commission_percentage'];
-            if (!is_numeric($commission) || $commission < 0) {
-                throw new InvalidRequestException('Customer commission percentage must be a non-negative number');
-            }
-        }
-
         // Validate custom fields if provided
         if (isset($params['custom_fields']) && !is_array($params['custom_fields'])) {
             throw new InvalidRequestException('Custom fields must be an array');
+        }
+
+        // Validate email if provided
+        if (isset($params['customer_email']) && !filter_var($params['customer_email'], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidRequestException('Invalid email address');
         }
     }
 

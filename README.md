@@ -35,7 +35,11 @@ $transvoucher = new TransVoucher([
 $payment = $transvoucher->payments->create([
     'amount' => 99.99,
     'currency' => 'USD',
-    'customer_email' => 'customer@example.com',
+    'title' => 'Payment for Order #123', // Required - title of the payment link
+    'customer_details' => [
+        'full_name' => 'John Doe', // Required if customer_details is provided
+        'email' => 'customer@example.com' // Optional
+    ],
     'redirect_url' => 'https://yourstore.com/success',
 ]);
 
@@ -69,15 +73,25 @@ Get your API credentials from your TransVoucher merchant dashboard:
 $payment = $transvoucher->payments->create([
     'amount' => 100.00,
     'currency' => 'USD',
-    'customer_email' => 'customer@example.com',
+    'title' => 'Digital Product Purchase', // Required - title of the payment link
     'redirect_url' => 'https://yourstore.com/success',
     'customer_details' => [
-        'full_name' => 'John Doe',
-        'email' => 'john@example.com'
+        // learn more about this at: https://transvoucher.com/api-documentation#pre_fill or examples/create_payment_full_prefill.php
+        'full_name' => 'John Doe',           // Required if customer_details is provided
+        'id' => 'cust_123',                  // Optional - Customer's unique identifier
+        'email' => 'john@example.com',       // Optional
+        'phone' => '+1234567890',            // Optional
+        'date_of_birth' => '1990-01-01',     // Optional - YYYY-MM-DD format
+        'country_of_residence' => 'US',      // Optional - ISO country code
+        'state_of_residence' => 'CA'         // Optional - Required for US customers
     ],
     'metadata' => [
+        // Optional - use this to identify the customer or payment session
+        // This data will be returned in webhooks and API responses
         'order_id' => 'order_123',
-        'product' => 'Digital Product'
+        'product_id' => 'prod_456',
+        'user_id' => 'user_789',
+        'session_id' => 'sess_abc'
     ],
     'theme' => [
         'color' => '#6366f1'
@@ -140,29 +154,34 @@ $signature = $_SERVER['HTTP_X_TRANSVOUCHER_SIGNATURE'] ?? '';
 if ($webhook->verifySignature($payload, $signature)) {
     $event = json_decode($payload, true);
     
-    switch ($event['type']) {
-        case 'payment.completed':
+    switch ($event['event']) {
+        case 'payment_intent.created':
             // Handle successful payment
-            $payment = $event['data'];
-            echo "Payment completed: " . $payment['reference_id'];
+            $transaction = $event['data']['transaction'];
+            echo "Payment intent created: " . $transaction['reference_id'];
+            break;
+        case 'payment_intent.succeeded':
+            // Handle successful payment
+            $transaction = $event['data']['transaction'];
+            echo "Payment completed: " . $transaction['reference_id'];
             break;
             
-        case 'payment.failed':
+        case 'payment_intent.failed':
             // Handle failed payment
-            $payment = $event['data'];
-            echo "Payment failed: " . $payment['reference_id'];
+            $transaction = $event['data']['transaction'];
+            echo "Payment failed: " . $transaction['reference_id'];
             break;
             
-        case 'payment.refunded':
-            // Handle refunded payment
-            $payment = $event['data'];
-            echo "Payment refunded: " . $payment['reference_id'];
+        case 'payment_intent.cancelled':
+            // Handle cancelled payment
+            $transaction = $event['data']['transaction'];
+            echo "Payment cancelled: " . $transaction['reference_id'];
             break;
             
-        case 'settlement.processed':
-            // Handle settlement completion
-            $settlement = $event['data'];
-            echo "Settlement processed: " . $settlement['transaction_id'];
+        case 'payment_intent.expired':
+            // Handle expired payment
+            $transaction = $event['data']['transaction'];
+            echo "Payment expired: " . $transaction['reference_id'];
             break;
     }
 } else {
@@ -232,17 +251,22 @@ $client = new TransVoucher([
 
 ### Payments
 
-#### Create Payment
+### Create Payment
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (optional): Currency code (USD, EUR) - default: USD
-- `customer_email` (optional): Customer email address
-- `customer_phone` (optional): Customer phone number
-- `customer_name` (optional): Customer full name
-- `customer_date_of_birth` (optional): Customer date of birth (d/M/Y format)
-- `customer_country_of_residence` (optional): Customer country of residence (country code, e.g UK)
+- `currency` (required): Currency code (USD, EUR)
+- `title` (required): Title of the payment link
+- `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
-- `metadata` (optional): Additional metadata for the payment
+- `customer_details` (optional): Customer information object
+  - `full_name` (required if customer_details provided): Customer's full name
+  - `id` (optional): Customer's unique identifier
+  - `email` (optional): Customer's email address
+  - `phone` (optional): Customer's phone number
+  - `date_of_birth` (optional): Customer's date of birth (YYYY-MM-DD format)
+  - `country_of_residence` (optional): Customer's country code (ISO format, e.g., 'US', 'GB')
+  - `state_of_residence` (optional): Required if country_of_residence is 'US'
+- `metadata` (optional): Use this to identify the customer or payment session (returned in webhooks and API responses)
 - `theme` (optional): UI theme customization
 - `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko)
 - `multiple_use` (optional): If payment link is meant for one or multiple payments
@@ -260,7 +284,8 @@ $client = new TransVoucher([
 
 ## Support
 
-- **Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
+- **API Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
+- **Service Availability**: [https://transvoucher.com/api-documentation/service-availability](https://transvoucher.com/api-documentation/service-availability)
 - **Email**: developers@transvoucher.com
 - **Telegram**: @kevin_tvoucher
 
@@ -366,13 +391,13 @@ class WebhookController extends Controller
         }
 
         switch ($payload['type']) {
-            case 'payment.completed':
+            case 'payment_intent.succeeded':
                 // Handle successful payment
                 $payment = $payload['data'];
                 event(new PaymentCompletedEvent($payment));
                 break;
 
-            case 'payment.failed':
+            case 'payment_intent.failed':
                 // Handle failed payment
                 event(new PaymentFailedEvent($payload['data']));
                 break;

@@ -94,7 +94,7 @@ class Webhook
      */
     public function getEventType(array $payload): ?string
     {
-        return $payload['type'] ?? null;
+        return $payload['event'] ?? null;
     }
 
     /**
@@ -109,46 +109,57 @@ class Webhook
     }
 
     /**
-     * Check if webhook event is a payment completion
+     * Check if webhook event is a payment intent creation
      *
      * @param array $payload Parsed webhook payload
      * @return bool
      */
-    public function isPaymentCompleted(array $payload): bool
+    public function isPaymentIntentCreated(array $payload): bool
     {
-        return $this->getEventType($payload) === 'payment.completed';
+        return $this->getEventType($payload) === 'payment_intent.created';
     }
 
     /**
-     * Check if webhook event is a payment failure
+     * Check if webhook event is a payment intent success
      *
      * @param array $payload Parsed webhook payload
      * @return bool
      */
-    public function isPaymentFailed(array $payload): bool
+    public function isPaymentIntentSucceeded(array $payload): bool
     {
-        return $this->getEventType($payload) === 'payment.failed';
+        return $this->getEventType($payload) === 'payment_intent.succeeded';
     }
 
     /**
-     * Check if webhook event is a payment refund
+     * Check if webhook event is a payment intent failure
      *
      * @param array $payload Parsed webhook payload
      * @return bool
      */
-    public function isPaymentRefunded(array $payload): bool
+    public function isPaymentIntentFailed(array $payload): bool
     {
-        return $this->getEventType($payload) === 'payment.refunded';
+        return $this->getEventType($payload) === 'payment_intent.failed';
     }
 
     /**
-     * Check if webhook event is a settlement processing
+     * Check if webhook event is a payment intent cancellation
      *
      * @param array $payload Parsed webhook payload
      * @return bool
      */
-    public function isSettlementProcessed(array $payload): bool
+    public function isPaymentIntentCancelled(array $payload): bool
     {
-        return $this->getEventType($payload) === 'settlement.processed';
+        return $this->getEventType($payload) === 'payment_intent.cancelled';
+    }
+
+    /**
+     * Check if webhook event is a payment intent expiration
+     *
+     * @param array $payload Parsed webhook payload
+     * @return bool
+     */
+    public function isPaymentIntentExpired(array $payload): bool
+    {
+        return $this->getEventType($payload) === 'payment_intent.expired';
     }
 } 

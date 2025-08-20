@@ -8,17 +8,17 @@ namespace TransVoucher\Model;
 class Payment
 {
     /**
-     * @var int|null
+     * @var string|null
      */
     public $id;
 
     /**
-     * @var int|null
+     * @var string|null
      */
     public $transaction_id;
 
     /**
-     * @var string|null Title of the payment link
+     * @var string Title of the payment link (required when creating)
      */
     public $title;
 
@@ -58,11 +58,6 @@ class Payment
     public $expires_at;
 
     /**
-     * @var array|null Additional custom fields
-     */
-    public $custom_fields;
-
-    /**
      * @var float|null Customer commission percentage
      */
     public $customer_commission_percentage;
@@ -93,7 +88,8 @@ class Payment
     public $customer_details;
 
     /**
-     * @var array|null
+     * @var array|null Optional metadata that can be used to identify the customer or payment session
+     *                 This data will be returned in webhooks and API responses
      */
     public $metadata;
 
@@ -101,6 +97,11 @@ class Payment
      * @var array|null
      */
     public $payment_details;
+
+    /**
+     * @var array|null Custom fields associated with the payment
+     */
+    public $custom_fields;
 
     /**
      * Create a new Payment instance from API response data
@@ -168,7 +169,12 @@ class Payment
         });
     }
 
-    public function getId(): ?int
+    public function getId(): ?string
+    {
+        return $this->transaction_id;
+    }
+
+    public function getTransactionId(): ?string
     {
         return $this->transaction_id;
     }

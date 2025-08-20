@@ -25,9 +25,11 @@ class PaymentController extends Controller
                 'currency' => 'USD',
                 'title' => "Order #{$order->id}",
                 'description' => "Payment for order #{$order->id}",
-                'customer_email' => $request->customer_email,
-                'customer_name' => $request->customer_name,
                 'redirect_url' => route('payment.success', $order),
+                'customer_details' => [
+                    'email' => $request->customer_email,
+                    'name' => $request->customer_name,
+                ],
                 'metadata' => [
                     'order_id' => $order->id,
                     'customer_id' => $order->customer_id,
@@ -59,7 +61,7 @@ class PaymentController extends Controller
         try {
             // Handle the webhook event
             switch ($payload['type']) {
-                case 'payment.completed':
+                case 'payment_intent.succeeded':
                     $payment = $payload['data'];
                     $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
                     
@@ -72,7 +74,7 @@ class PaymentController extends Controller
                     event(new PaymentCompletedEvent($order));
                     break;
 
-                case 'payment.failed':
+                case 'payment_intent.failed':
                     $payment = $payload['data'];
                     $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
                     

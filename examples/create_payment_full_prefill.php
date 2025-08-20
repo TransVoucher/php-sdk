@@ -2,6 +2,8 @@
 
 require_once __DIR__ . '/../vendor/autoload.php';
 
+// Read more about this here: https://transvoucher.com/api-documentation#pre_fill
+
 use TransVoucher\TransVoucher;
 use TransVoucher\Exception\TransVoucherException;
 
@@ -17,12 +19,17 @@ try {
     $payment = $transvoucher->payments->create([
         'amount' => 99.99,
         'currency' => 'USD',
+        'customer_email' => 'customer@example.com',
         'redirect_url' => 'https://yourstore.com/success',
         // read https://transvoucher.test/api-documentation#pre_fill
-        // or check create_payment_full_prefill.php example to see what you can do with this:
         'customer_details' => [
             'full_name' => 'John Doe',
-            'email' => 'john@example.com'
+            'email' => 'john@example.com',
+            'phone' => '+11234567890',
+            'date_of_birth' => '1990-01-01',
+            'country_of_residence' => 'US',
+            // required in case country_of_residence is "US":
+            'state_of_residence' => 'MT',
         ],
         // Use metadata to identify customer/session - will be returned in webhooks and API responses
         'metadata' => [
