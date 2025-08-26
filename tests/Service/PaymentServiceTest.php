@@ -35,7 +35,7 @@ class PaymentServiceTest extends TestCase
             'data' => [
                 'id' => 1,
                 'transaction_id' => 123,
-                'payment_url' => 'https://transvoucher.site/pay/xyz',
+                'payment_url' => 'https://transvoucher.com/pay/xyz',
                 'amount' => 100.00,
                 'currency' => 'USD',
                 'status' => 'pending',

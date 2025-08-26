@@ -83,7 +83,12 @@ $payment = $transvoucher->payments->create([
         'phone' => '+1234567890',            // Optional
         'date_of_birth' => '1990-01-01',     // Optional - YYYY-MM-DD format
         'country_of_residence' => 'US',      // Optional - ISO country code
-        'state_of_residence' => 'CA'         // Optional - Required for US customers
+        'state_of_residence' => 'CA',         // Optional - Required for US customers
+        'card_country_code' => 'US',         // Optional - prefill card information
+        'card_city' => 'California',         // Optional - prefill card information
+        'card_state_code' => 'CA',           // Optional - prefill card information
+        'card_post_code' => '12345',         // Optional - prefill card information
+        'card_street' => 'Street 123',       // Optional - prefill card information
     ],
     'metadata' => [
         // Optional - use this to identify the customer or payment session

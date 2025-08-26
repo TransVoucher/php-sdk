@@ -30,6 +30,12 @@ try {
             'country_of_residence' => 'US',
             // required in case country_of_residence is "US":
             'state_of_residence' => 'MT',
+            // if you want to prefill card information
+            'card_country_code' => 'US',
+            'card_city' => 'Montana',
+            'card_state_code' => 'MT',
+            'card_post_code' => '12345',
+            'card_street' => 'Street 123',
         ],
         // Use metadata to identify customer/session - will be returned in webhooks and API responses
         'metadata' => [
