@@ -77,7 +77,7 @@ class PaymentServiceTest extends TestCase
     public function testCreatePaymentValidatesCurrency()
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Currency must be one of: USD, EUR');
+        $this->expectExceptionMessage('Currency must be one of: USD, EUR, TRY');
 
         $this->paymentService->create([
             'amount' => 100,
@@ -182,7 +182,7 @@ class PaymentServiceTest extends TestCase
     public function testGetPaymentStatusValidatesReferenceId()
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Reference ID is required');
+        $this->expectExceptionMessage('Transaction ID is required');
 
         $this->paymentService->status('');
     }

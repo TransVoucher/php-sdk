@@ -49,19 +49,19 @@ class PaymentService
     }
 
     /**
-     * Get payment status by reference ID
+     * Get payment status by transaction ID
      *
-     * @param string $referenceId Payment reference ID
+     * @param string $referenceId Payment transaction ID
      * @return Payment
      * @throws TransVoucherException
      */
-    public function status(string $referenceId): Payment
+    public function status(string $transactionId): Payment
     {
-        if (empty($referenceId)) {
-            throw new InvalidRequestException('Reference ID is required');
+        if (empty($transactionId)) {
+            throw new InvalidRequestException('Transaction ID is required');
         }
 
-        $response = $this->client->get("/payment/status/{$referenceId}");
+        $response = $this->client->get("/payment/status/{$transactionId}");
         
         if (!isset($response['data'])) {
             throw new TransVoucherException('Invalid response format from API');
@@ -110,7 +110,7 @@ class PaymentService
 
         // Validate currency if provided
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR'];
+            $validCurrencies = ['USD', 'EUR', 'TRY'];
             if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
                 throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
             }
@@ -119,6 +119,14 @@ class PaymentService
         // Validate URLs if provided
         if (isset($params['redirect_url']) && !filter_var($params['redirect_url'], FILTER_VALIDATE_URL)) {
             throw new InvalidRequestException('Invalid redirect URL');
+        }
+         // Validate URLs if provided
+         if (isset($params['success_url']) && !filter_var($params['success_url'], FILTER_VALIDATE_URL)) {
+            throw new InvalidRequestException('Invalid success URL');
+        }
+         // Validate URLs if provided
+         if (isset($params['cancel_url']) && !filter_var($params['cancel_url'], FILTER_VALIDATE_URL)) {
+            throw new InvalidRequestException('Invalid cancel URL');
         }
 
         // Validate language if provided
@@ -154,6 +162,10 @@ class PaymentService
 
         // Validate email if provided
         if (isset($params['customer_email']) && !filter_var($params['customer_email'], FILTER_VALIDATE_EMAIL)) {
+            throw new InvalidRequestException('Invalid email address');
+        }
+        // Validate email if provided
+        if (isset($params['customer_details']['email']) && !filter_var($params['customer_details']['email'], FILTER_VALIDATE_EMAIL)) {
             throw new InvalidRequestException('Invalid email address');
         }
     }

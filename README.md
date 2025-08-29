@@ -40,7 +40,12 @@ $payment = $transvoucher->payments->create([
         'full_name' => 'John Doe', // Required if customer_details is provided
         'email' => 'customer@example.com' // Optional
     ],
-    'redirect_url' => 'https://yourstore.com/success',
+
+    //'redirect_url' => 'https://yourstore.com/status',
+    // OR:
+    'success_url' => 'https://yourstore.com/success',
+    'cancel_url' => 'https://yourstore.com/cancel',
+
 ]);
 
 // Redirect to payment page
@@ -74,7 +79,12 @@ $payment = $transvoucher->payments->create([
     'amount' => 100.00,
     'currency' => 'USD',
     'title' => 'Digital Product Purchase', // Required - title of the payment link
-    'redirect_url' => 'https://yourstore.com/success',
+
+    //'redirect_url' => 'https://yourstore.com/status',
+    // OR:
+    'success_url' => 'https://yourstore.com/success',
+    'cancel_url' => 'https://yourstore.com/cancel',
+
     'customer_details' => [
         // learn more about this at: https://transvoucher.com/api-documentation#pre_fill or examples/create_payment_full_prefill.php
         'full_name' => 'John Doe',           // Required if customer_details is provided
@@ -83,7 +93,7 @@ $payment = $transvoucher->payments->create([
         'phone' => '+1234567890',            // Optional
         'date_of_birth' => '1990-01-01',     // Optional - YYYY-MM-DD format
         'country_of_residence' => 'US',      // Optional - ISO country code
-        'state_of_residence' => 'CA',         // Optional - Required for US customers
+        'state_of_residence' => 'CA',        // Optional - Required for US customers
         'card_country_code' => 'US',         // Optional - prefill card information
         'card_city' => 'California',         // Optional - prefill card information
         'card_state_code' => 'CA',           // Optional - prefill card information
@@ -99,7 +109,7 @@ $payment = $transvoucher->payments->create([
         'session_id' => 'sess_abc'
     ],
     'theme' => [
-        'color' => '#6366f1'
+        'color' => '#7014f4'
     ],
     'lang' => 'en'
 ]);
@@ -259,7 +269,7 @@ $client = new TransVoucher([
 ### Create Payment
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (required): Currency code (USD, EUR)
+- `currency` (required): Currency code (USD, EUR, TRY) | TRY via USD!
 - `title` (required): Title of the payment link
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)

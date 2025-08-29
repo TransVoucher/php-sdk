@@ -17,7 +17,12 @@ try {
     $payment = $transvoucher->payments->create([
         'amount' => 99.99,
         'currency' => 'USD',
-        'redirect_url' => 'https://yourstore.com/success',
+        
+        //'redirect_url' => 'https://yourstore.com/status',
+        // OR:
+        'success_url' => 'https://yourstore.com/success',
+        'cancel_url' => 'https://yourstore.com/cancel',
+
         // read https://transvoucher.test/api-documentation#pre_fill
         // or check create_payment_full_prefill.php example to see what you can do with this:
         'customer_details' => [

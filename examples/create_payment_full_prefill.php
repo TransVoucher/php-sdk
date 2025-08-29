@@ -20,7 +20,12 @@ try {
         'amount' => 99.99,
         'currency' => 'USD',
         'customer_email' => 'customer@example.com',
-        'redirect_url' => 'https://yourstore.com/success',
+        
+        //'redirect_url' => 'https://yourstore.com/status',
+        // OR:
+        'success_url' => 'https://yourstore.com/success',
+        'cancel_url' => 'https://yourstore.com/cancel',
+
         // read https://transvoucher.test/api-documentation#pre_fill
         'customer_details' => [
             'full_name' => 'John Doe',
