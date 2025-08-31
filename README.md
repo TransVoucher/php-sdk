@@ -37,8 +37,9 @@ $payment = $transvoucher->payments->create([
     'currency' => 'USD',
     'title' => 'Payment for Order #123', // Required - title of the payment link
     'customer_details' => [
-        'full_name' => 'John Doe', // Required if customer_details is provided
-        'email' => 'customer@example.com' // Optional
+        'first_name' => 'John',
+        'last_name' => 'Doe',
+        'email' => 'customer@example.com'
     ],
 
     //'redirect_url' => 'https://yourstore.com/status',
@@ -87,7 +88,9 @@ $payment = $transvoucher->payments->create([
 
     'customer_details' => [
         // learn more about this at: https://transvoucher.com/api-documentation#pre_fill or examples/create_payment_full_prefill.php
-        'full_name' => 'John Doe',           // Required if customer_details is provided
+        'first_name' => 'John',
+        'middle_name' => 'Jay',              // Optional
+        'last_name' => 'Doe',
         'id' => 'cust_123',                  // Optional - Customer's unique identifier
         'email' => 'john@example.com',       // Optional
         'phone' => '+1234567890',            // Optional
@@ -274,9 +277,11 @@ $client = new TransVoucher([
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
 - `customer_details` (optional): Customer information object
-  - `full_name` (required if customer_details provided): Customer's full name
+  - `email` (required): Customer's email address
+  - `first_name` (optional): Customer's first name
+  - `middle_name` (optional): Customer's middle name
+  - `last_name` (optional): Customer's last name
   - `id` (optional): Customer's unique identifier
-  - `email` (optional): Customer's email address
   - `phone` (optional): Customer's phone number
   - `date_of_birth` (optional): Customer's date of birth (YYYY-MM-DD format)
   - `country_of_residence` (optional): Customer's country code (ISO format, e.g., 'US', 'GB')

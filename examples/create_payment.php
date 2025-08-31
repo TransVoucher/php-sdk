@@ -26,7 +26,8 @@ try {
         // read https://transvoucher.test/api-documentation#pre_fill
         // or check create_payment_full_prefill.php example to see what you can do with this:
         'customer_details' => [
-            'full_name' => 'John Doe',
+            'first_name' => 'John',
+            'last_name' => 'Doe',
             'email' => 'john@example.com'
         ],
         // Use metadata to identify customer/session - will be returned in webhooks and API responses

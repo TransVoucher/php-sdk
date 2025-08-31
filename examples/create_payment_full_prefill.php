@@ -28,7 +28,9 @@ try {
 
         // read https://transvoucher.test/api-documentation#pre_fill
         'customer_details' => [
-            'full_name' => 'John Doe',
+            'first_name' => 'John',
+            'middle_name' => 'Jay', // optional, skip if none
+            'last_name' => 'Doe',
             'email' => 'john@example.com',
             'phone' => '+11234567890',
             'date_of_birth' => '1990-01-01',
