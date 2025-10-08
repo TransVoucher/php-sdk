@@ -14,7 +14,7 @@ try {
     ]);
 
     // Get payment status by reference ID
-    $referenceId = 'txn_abc123def456'; // Replace with actual reference ID
+    $referenceId = '...'; // Replace with actual reference ID
     $payment = $transvoucher->payments->status($referenceId);
 
     echo "Payment Status Information:\n";

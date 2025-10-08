@@ -15,6 +15,7 @@ try {
 
     // Create a payment
     $payment = $transvoucher->payments->create([
+        'title' => 'My NFT',
         'amount' => 99.99,
         'currency' => 'USD',
         

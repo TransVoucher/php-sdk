@@ -24,13 +24,16 @@ class PaymentTest extends TestCase
         'updated_at' => '2025-08-06T10:00:00Z',
         'customer_details' => [
             'email' => 'test@example.com',
-            'full_name' => 'Test User'
+            'first_name' => 'Test',
+            'last_name' => 'User'
         ],
         'metadata' => [
             'order_id' => '12345'
         ],
-        'payment_details' => [
-            'payment_method' => 'card'
+        'payment_method' => [
+            'card_brand' => 'VISA',
+            'payment_type' => 'card',
+            'processed_through' => 'safecharge',
         ],
         'multiple_use' => true,
     ];
@@ -54,9 +57,9 @@ class PaymentTest extends TestCase
         $this->assertEquals(2.5, $payment->customer_commission_percentage);
         $this->assertEquals('2025-08-06T10:00:00Z', $payment->created_at);
         $this->assertEquals('2025-08-06T10:00:00Z', $payment->updated_at);
-        $this->assertEquals(['email' => 'test@example.com', 'full_name' => 'Test User'], $payment->customer_details);
+        $this->assertEquals(['email' => 'test@example.com', 'first_name' => 'Test', 'last_name' => 'User'], $payment->customer_details);
         $this->assertEquals(['order_id' => '12345'], $payment->metadata);
-        $this->assertEquals(['payment_method' => 'card'], $payment->payment_details);
+        $this->assertEquals(['card_brand' => 'VISA', 'payment_type' => 'card', 'processed_through' => 'safecharge'], $payment->payment_method);
         $this->assertEquals(true, $payment->multiple_use);
     }
 
@@ -87,7 +90,7 @@ class PaymentTest extends TestCase
     {
         $payment = Payment::fromArray($this->paymentData);
 
-        $this->assertEquals($this->paymentData['transaction_id'], $payment->getId());
+        $this->assertEquals($this->paymentData['id'], $payment->getId());
         $this->assertEquals($this->paymentData['amount'], $payment->getAmount());
         $this->assertEquals($this->paymentData['currency'], $payment->getCurrency());
         $this->assertEquals($this->paymentData['status'], $payment->getStatus());

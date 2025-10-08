@@ -128,7 +128,7 @@ class TransVoucher
             'environment' => 'production',
             'timeout' => 30,
             'connect_timeout' => 10,
-            'user_agent' => 'TransVoucher-PHP-SDK/1.0.0',
+            'user_agent' => 'TransVoucher-PHP-SDK/1.1.0',
             'base_url' => null,
         ];
 

@@ -28,7 +28,6 @@ class PaymentServiceTest extends TestCase
             'currency' => 'USD',
             'title' => 'Test Payment',
             'description' => 'Test payment description',
-            'customer_email' => 'test@example.com'
         ];
 
         $responseData = [
@@ -37,7 +36,9 @@ class PaymentServiceTest extends TestCase
                 'transaction_id' => 123,
                 'payment_url' => 'https://transvoucher.com/pay/xyz',
                 'amount' => 100.00,
+                'fiat_base_amount' => 100.00,
                 'currency' => 'USD',
+                'fiat_currency' => 'USD',
                 'status' => 'pending',
                 'expires_at' => '2025-08-07T10:00:00Z'
             ]
@@ -77,25 +78,14 @@ class PaymentServiceTest extends TestCase
     public function testCreatePaymentValidatesCurrency()
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Currency must be one of: USD, EUR, TRY');
+        $this->expectExceptionMessage('Currency must be one of: USD, EUR, NZD, TRY, INR');
 
         $this->paymentService->create([
             'amount' => 100,
             'currency' => 'INVALID'
         ]);
     }
-
-    public function testCreatePaymentValidatesEmail()
-    {
-        $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Invalid email address');
-
-        $this->paymentService->create([
-            'amount' => 100,
-            'customer_email' => 'invalid-email'
-        ]);
-    }
-
+    
     public function testCreatePaymentValidatesRedirectUrl()
     {
         $this->expectException(InvalidRequestException::class);
@@ -158,8 +148,8 @@ class PaymentServiceTest extends TestCase
             'data' => [
                 'transaction_id' => 123,
                 'reference_id' => $referenceId,
-                'amount' => 100.00,
-                'currency' => 'USD',
+                'fiat_base_amount' => 100.00,
+                'fiat_currency' => 'USD',
                 'status' => 'completed',
                 'paid_at' => '2025-08-06T10:00:00Z'
             ]

@@ -20,7 +20,7 @@ class PaymentController extends Controller
 
         try {
             // Create payment using the facade
-            $payment = TransVoucher::payments->create([
+            $payment = TransVoucher::payments()->create([
                 'amount' => $order->total_amount,
                 'currency' => 'USD',
                 'title' => "Order #{$order->id}",
@@ -64,7 +64,7 @@ class PaymentController extends Controller
                 case 'payment_intent.succeeded':
                     $payment = $payload['data'];
                     $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
-                    
+
                     $order->update([
                         'status' => 'paid',
                         'paid_at' => now(),
@@ -77,9 +77,49 @@ class PaymentController extends Controller
                 case 'payment_intent.failed':
                     $payment = $payload['data'];
                     $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
-                    
+
                     $order->update(['status' => 'payment_failed']);
                     event(new PaymentFailedEvent($order));
+                    break;
+
+                case 'payment_intent.created':
+                    $payment = $payload['data'];
+                    $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
+
+                    $order->update(['status' => 'pending']);
+                    event(new PaymentCreatedEvent($order));
+                    break;
+
+                case 'payment_intent.expired':
+                    $payment = $payload['data'];
+                    $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
+
+                    $order->update(['status' => 'expired']);
+                    event(new PaymentExpiredEvent($order));
+                    break;
+
+                case 'payment_intent.cancelled':
+                    $payment = $payload['data'];
+                    $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
+
+                    $order->update(['status' => 'cancelled']);
+                    event(new PaymentCancelledEvent($order));
+                    break;
+
+                case 'payment_intent.attempting':
+                    $payment = $payload['data'];
+                    $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
+
+                    $order->update(['status' => 'attempting_payment']);
+                    event(new PaymentAttemptingEvent($order));
+                    break;
+
+                case 'payment_intent.processing':
+                    $payment = $payload['data'];
+                    $order = Order::where('payment_reference', $payment['reference_id'])->firstOrFail();
+
+                    $order->update(['status' => 'payment_processing']);
+                    event(new PaymentProcessingEvent($order));
                     break;
             }
 
@@ -97,7 +137,30 @@ class PaymentController extends Controller
     public function checkStatus(Order $order)
     {
         try {
-            $payment = TransVoucher::payments->status($order->payment_reference);
+            $payment = TransVoucher::payments()->status($order->payment_reference);
+
+            return response()->json([
+                'status' => $payment->status,
+                'amount' => $payment->amount,
+                'paid_at' => $payment->paid_at,
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
+    }
+
+    /**
+     * Check payment link status
+     */
+    public function checkPaymentLinkStatus(Request $request)
+    {
+        $request->validate([
+            'payment_link_id' => 'required|string',
+        ]);
+
+        try {
+            $payment = TransVoucher::payments()->paymentLinkStatus($request->payment_link_id);
 
             return response()->json([
                 'status' => $payment->status,

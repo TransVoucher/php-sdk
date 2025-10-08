@@ -130,6 +130,17 @@ class Webhook
         return $this->getEventType($payload) === 'payment_intent.succeeded';
     }
 
+     /**
+     * Check if webhook event is a payment intent attempting
+     *
+     * @param array $payload Parsed webhook payload
+     * @return bool
+     */
+    public function isPaymentIntentAttempting(array $payload): bool
+    {
+        return $this->getEventType($payload) === 'payment_intent.attempting';
+    }
+
     /**
      * Check if webhook event is a payment intent failure
      *
@@ -161,5 +172,16 @@ class Webhook
     public function isPaymentIntentExpired(array $payload): bool
     {
         return $this->getEventType($payload) === 'payment_intent.expired';
+    }
+
+    /**
+     * Check if webhook event is a payment intent expiration
+     *
+     * @param array $payload Parsed webhook payload
+     * @return bool
+     */
+    public function isPaymentIntentProcessing(array $payload): bool
+    {
+        return $this->getEventType($payload) === 'payment_intent.processing';
     }
 } 

@@ -62,7 +62,29 @@ class PaymentService
         }
 
         $response = $this->client->get("/payment/status/{$transactionId}");
-        
+
+        if (!isset($response['data'])) {
+            throw new TransVoucherException('Invalid response format from API');
+        }
+
+        return Payment::fromArray($response['data']);
+    }
+
+    /**
+     * Get payment link status by payment link ID
+     *
+     * @param string $paymentLinkId Payment link ID
+     * @return Payment
+     * @throws TransVoucherException
+     */
+    public function paymentLinkStatus(string $paymentLinkId): Payment
+    {
+        if (empty($paymentLinkId)) {
+            throw new InvalidRequestException('Payment link ID is required');
+        }
+
+        $response = $this->client->get("/payment-link/status/{$paymentLinkId}");
+
         if (!isset($response['data'])) {
             throw new TransVoucherException('Invalid response format from API');
         }
@@ -110,7 +132,7 @@ class PaymentService
 
         // Validate currency if provided
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR', 'TRY'];
+            $validCurrencies = ['USD', 'EUR', 'NZD', 'TRY', 'INR'];
             if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
                 throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
             }
@@ -131,7 +153,7 @@ class PaymentService
 
         // Validate language if provided
         if (isset($params['lang'])) {
-            $validLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko'];
+            $validLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko', 'tr'];
             if (!in_array($params['lang'], $validLanguages)) {
                 throw new InvalidRequestException('Language must be one of: ' . implode(', ', $validLanguages));
             }

@@ -17,10 +17,10 @@ try {
 
     // Create a payment
     $payment = $transvoucher->payments->create([
+        'title' => 'My NFT',
         'amount' => 99.99,
         'currency' => 'USD',
-        'customer_email' => 'customer@example.com',
-        
+
         //'redirect_url' => 'https://yourstore.com/status',
         // OR:
         'success_url' => 'https://yourstore.com/success',

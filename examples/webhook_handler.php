@@ -28,6 +28,14 @@ try {
         case 'payment_intent.created':
             handlePaymentIntentCreated($eventData);
             break;
+
+        case 'payment_intent.attempting':
+            handlePaymentIntentAttempting($eventData);
+            break;
+
+        case 'payment_intent.processing':
+            handlePaymentIntentProcessing($eventData);
+            break;
             
         case 'payment_intent.succeeded':
             handlePaymentIntentSucceeded($eventData);
@@ -81,7 +89,7 @@ function handlePaymentIntentCreated(array $eventData): void
     $transaction = $eventData['transaction'];
     $referenceId = $transaction['reference_id'];
     $amount = $transaction['amount'];
-    $currency = $transaction['currency'];
+    $currency = $transaction['fiat_currency'];
     
     echo "Processing payment intent creation: {$referenceId} for {$amount} {$currency}\n";
     
@@ -92,6 +100,42 @@ function handlePaymentIntentCreated(array $eventData): void
     // Example database update (pseudo-code)
     // logPaymentIntent($transaction['id'], $referenceId);
     // initializeOrder($referenceId, $amount, $currency);
+}
+
+/**
+ * Handle payment attempting event
+ */
+function handlePaymentIntentAttempting(array $eventData): void
+{
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
+    $amount = $transaction['amount'];
+    $currency = $transaction['fiat_currency'];
+    
+    echo "Processing payment attempting: {$referenceId} for {$amount} {$currency}\n";
+    
+    // Update your database
+    
+    // Example database update (pseudo-code)
+    // updateOrderStatus($referenceId, 'attempting');
+}
+
+/**
+ * Handle payment processing event
+ */
+function handlePaymentIntentProcessing(array $eventData): void
+{
+    $transaction = $eventData['transaction'];
+    $referenceId = $transaction['reference_id'];
+    $amount = $transaction['amount'];
+    $currency = $transaction['fiat_currency'];
+    
+    echo "Processing payment processing: {$referenceId} for {$amount} {$currency}\n";
+    
+    // Update your database
+    
+    // Example database update (pseudo-code)
+    // updateOrderStatus($referenceId, 'processing');
 }
 
 /**

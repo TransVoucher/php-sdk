@@ -178,12 +178,25 @@ if ($webhook->verifySignature($payload, $signature)) {
             $transaction = $event['data']['transaction'];
             echo "Payment intent created: " . $transaction['reference_id'];
             break;
+
+        case 'payment_intent.attempting':
+            // Handle a payment being attempted
+            $transaction = $event['data']['transaction'];
+            echo "Payment attempting: " . $transaction['reference_id'];
+            break;
+
+        case 'payment_intent.processing':
+            // Handle successful payment
+            $transaction = $event['data']['transaction'];
+            echo "Payment processing: " . $transaction['reference_id'];
+            break;
+
         case 'payment_intent.succeeded':
             // Handle successful payment
             $transaction = $event['data']['transaction'];
             echo "Payment completed: " . $transaction['reference_id'];
             break;
-            
+
         case 'payment_intent.failed':
             // Handle failed payment
             $transaction = $event['data']['transaction'];
@@ -219,6 +232,7 @@ use TransVoucher\Exception\ApiException;
 
 try {
     $payment = $transvoucher->payments->create([
+        'title' => 'My NFT',
         'amount' => 99.99,
         'currency' => 'USD'
     ]);
@@ -245,14 +259,26 @@ $transvoucher = new TransVoucher([
 ]);
 ```
 
-### Test Card Numbers
+### 🧪 Sandbox Testing Rules
 
-| Card Number | Brand | Result |
-|-------------|-------|--------|
-| 4242424242424242 | Visa | Success |
-| 4000000000000002 | Visa | Declined |
-| 5555555555554444 | Mastercard | Success |
-| 4000000000000069 | Visa | Expired Card |
+- 💳 Only card payments work reliably - Google Pay/ApplePay usually won't work
+- 👤 Enter any valid format for customer profile data
+- 📱 Use any phone number (must be valid, but we don't send real OTP/SMS - use "1234" or any other code)
+- 💳 Always use test card: `4242 4242 4242 4242` with a future expiry date
+
+#### 🔑 CVV determines payment outcome:
+
+| CVV | Result |
+|-----|--------|
+| 400 | ❌ General failure |
+| 401 | 💳 Declined by card issuer |
+| 402 | 📝 Incorrect card details |
+| 403 | 📊 Transaction limits exceeded |
+| 404 | 💰 Insufficient funds |
+| 405 | 🔒 Incorrect CVV |
+| 406 | 🗑️ Failed card validation (card deleted) |
+| 407 | 🆘 Failed card validation (contact support) |
+| ANY OTHER (e.g., 123) | ✅ SUCCESS |
 
 ## API Reference
 
@@ -271,13 +297,17 @@ $client = new TransVoucher([
 
 ### Create Payment
 
+**Request Parameters:**
+
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (required): Currency code (USD, EUR, TRY) | TRY via USD!
-- `title` (required): Title of the payment link
+- `currency` (required): Currency code (USD, EUR, NZD, TRY, INR) | For NFT checkout, TRY and INR work only via USD!
+- `title` (optional): Title of the payment link
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
+- `success_url` (optional): URL to redirect to after successful payment
+- `cancel_url` (optional): URL to redirect to after cancelled payment
 - `customer_details` (optional): Customer information object
-  - `email` (required): Customer's email address
+  - `email` (optional): Customer's email address
   - `first_name` (optional): Customer's first name
   - `middle_name` (optional): Customer's middle name
   - `last_name` (optional): Customer's last name
@@ -285,29 +315,81 @@ $client = new TransVoucher([
   - `phone` (optional): Customer's phone number
   - `date_of_birth` (optional): Customer's date of birth (YYYY-MM-DD format)
   - `country_of_residence` (optional): Customer's country code (ISO format, e.g., 'US', 'GB')
-  - `state_of_residence` (optional): Required if country_of_residence is 'US'
+  - `state_of_residence` (optional): Required if country_of_residence is 'US', has to be empty for any other country
+  - `card_country_code` (optional): Prefill card country
+  - `card_city` (optional): Prefill card city
+  - `card_state_code` (optional): Prefill card state
+  - `card_post_code` (optional): Prefill card postal code
+  - `card_street` (optional): Prefill card street address
 - `metadata` (optional): Use this to identify the customer or payment session (returned in webhooks and API responses)
+- `custom_fields` (optional): Custom key-value pairs for additional data
+- `expires_at` (optional): ISO 8601 timestamp when payment link expires
 - `theme` (optional): UI theme customization
-- `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko)
-- `multiple_use` (optional): If payment link is meant for one or multiple payments
+  - `color` (optional): Primary theme color (hex format, e.g., '#7014f4')
+- `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko, tr)
+- `multiple_use` (optional): Boolean - if payment link is meant for one or multiple payments
+- `customer_commission_percentage` (optional): Commission percentage charged to customer
 
-#### Payment Status
+**Response - Payment Object:**
 
-- `status`: pending, completed, failed, expired
-- `amount`: Payment amount
-- `currency`: Payment currency
+- `id`: Payment link ID
+- `transaction_id`: Internal transaction ID (only present after payment is initiated)
+- `title`: Payment title
+- `description`: Payment description
 - `reference_id`: Unique payment reference
-- `transaction_id`: Internal transaction ID
-- `created_at`: Payment creation timestamp
-- `updated_at`: Last update timestamp
-- `paid_at`: Payment completion timestamp (if completed)
+- `payment_link_id`: Payment link ID (same as id in create response)
+- `payment_url`: URL where customer can complete payment
+- `flow_type`: Flow type (e.g., 'nft')
+- `amount`: Amount in fiat currency
+- `fiat_base_amount`: Base fiat amount (before fees)
+- `fiat_total_amount`: Total fiat amount (including fees)
+- `currency`: Fiat currency code
+- `fiat_currency`: Fiat currency code (same as currency)
+- `commodity`: Commodity type (e.g., 'USDT')
+- `commodity_amount`: Amount of commodity to be purchased
+- `status`: Payment status (pending, attempting, processing, completed, failed, expired, cancelled)
+- `fail_reason`: Reason for payment failure (if failed)
+- `created_at`: ISO 8601 timestamp when payment was created
+- `updated_at`: ISO 8601 timestamp when payment was last updated
+- `paid_at`: ISO 8601 timestamp when payment was completed (if completed)
+- `expires_at`: ISO 8601 timestamp when payment expires
+- `custom_fields`: Custom fields array
+- `customer_commission_percentage`: Customer commission percentage
+- `multiple_use`: Whether payment link can be used multiple times
+- `customer_details`: Customer details object
+- `metadata`: Metadata object
+- `payment_method`: Payment method information with keys:
+  - `card_id`: Card identifier
+  - `card_brand`: Card brand (e.g., 'VISA', 'MASTERCARD')
+  - `payment_type`: Payment type (e.g., '3ds_v2')
+  - `processed_through`: Payment processor (e.g., 'safecharge')
+
+### Get Payment Status
+
+Get the status of a payment by transaction UUID.
+
+```php
+$payment = $transvoucher->payments->status('...');
+```
+
+Returns a Payment object with all the fields listed above.
+
+### Get Payment Link Status
+
+Get the status of a payment link by payment link UUID.
+
+```php
+$payment = $transvoucher->payments->paymentLinkStatus('...');
+```
+
+Returns a Payment object with all the fields listed above.
 
 ## Support
 
 - **API Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
 - **Service Availability**: [https://transvoucher.com/api-documentation/service-availability](https://transvoucher.com/api-documentation/service-availability)
+- **Telegram**: @TransVoucher_Support_Bot
 - **Email**: developers@transvoucher.com
-- **Telegram**: @kevin_tvoucher
 
 ## Laravel Integration
 
@@ -359,11 +441,10 @@ use TransVoucher\Laravel\Facades\TransVoucher;
 $payment = TransVoucher::payments->create([
     'amount' => 99.99,
     'currency' => 'USD',
-    'customer_email' => 'customer@example.com',
 ]);
 
 // Check payment status
-$status = TransVoucher::payments->status('ref_123');
+$status = TransVoucher::payments->status('payment_id');
 
 // List payments
 $payments = TransVoucher::payments->list([
@@ -416,6 +497,8 @@ class WebhookController extends Controller
                 $payment = $payload['data'];
                 event(new PaymentCompletedEvent($payment));
                 break;
+
+            //...
 
             case 'payment_intent.failed':
                 // Handle failed payment
