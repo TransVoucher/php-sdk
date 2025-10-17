@@ -37,7 +37,7 @@ try {
             'order_id' => 'order_123',
             'product' => 'Digital Product'
         ],
-        'lang' => 'en'
+        'lang' => 'en' // the language for the payment page - possible values: en, es, fr, de, it, pt, ru, zh, ja, ko, tr
     ]);
 
     echo "Payment created successfully!\n";

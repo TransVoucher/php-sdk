@@ -132,7 +132,7 @@ class PaymentService
 
         // Validate currency if provided
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR', 'NZD', 'TRY', 'INR'];
+            $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'TRY', 'INR'];
             if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
                 throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
             }

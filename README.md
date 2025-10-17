@@ -91,17 +91,28 @@ $payment = $transvoucher->payments->create([
         'first_name' => 'John',
         'middle_name' => 'Jay',              // Optional
         'last_name' => 'Doe',
-        'id' => 'cust_123',                  // Optional - Customer's unique identifier
+
         'email' => 'john@example.com',       // Optional
         'phone' => '+1234567890',            // Optional
         'date_of_birth' => '1990-01-01',     // Optional - YYYY-MM-DD format
-        'country_of_residence' => 'US',      // Optional - ISO country code
+        'country_of_residence' => 'US',      // Optional - if present, has to be alpha-2 country short code
         'state_of_residence' => 'CA',        // Optional - Required for US customers
-        'card_country_code' => 'US',         // Optional - prefill card information
-        'card_city' => 'California',         // Optional - prefill card information
-        'card_state_code' => 'CA',           // Optional - prefill card information
-        'card_post_code' => '12345',         // Optional - prefill card information
-        'card_street' => 'Street 123',       // Optional - prefill card information
+        // rules for usage of "state_of_residence":
+        // - if present, has to be a valid US state short code (alpha-2 uppercase)
+        // - required if "country_of_residence" is "US" (we will ask for it if you don't prefill it)
+        // - has to be dropped (not be in the payload) when "country_of_residence" is not "US"
+
+        'card_country_code' => 'US',         // Optional - alpha-2 country short code card billing address
+        'card_city' => 'California',         // Optional - prefill card billing address
+        
+        'card_state_code' => 'CA',           // Optional - US state alpha-2 short code card billing address
+        // rules for usage of "card_state_code":
+        // - if present, has to be a valid US state short code (alpha-2 uppercase)
+        // - required if "card_country_code" is "US" (we will ask for it if you don't prefill it)
+        // - has to be dropped (not be in the payload) when "card_country_code" is not "US"
+
+        'card_post_code' => '12345',         // Optional - zip/post code card billing address
+        'card_street' => 'Street 123',       // Optional - address line 1 (& 2) card billing address
     ],
     'metadata' => [
         // Optional - use this to identify the customer or payment session
@@ -111,10 +122,7 @@ $payment = $transvoucher->payments->create([
         'user_id' => 'user_789',
         'session_id' => 'sess_abc'
     ],
-    'theme' => [
-        'color' => '#7014f4'
-    ],
-    'lang' => 'en'
+    'lang' => 'en' // the language for the payment page - possible values: en, es, fr, de, it, pt, ru, zh, ja, ko, tr
 ]);
 
 echo "Payment URL: " . $payment->payment_url;
@@ -300,7 +308,7 @@ $client = new TransVoucher([
 **Request Parameters:**
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (required): Currency code (USD, EUR, NZD, TRY, INR) | For NFT checkout, TRY and INR work only via USD!
+- `currency` (required): Currency code (USD, EUR, NZD, AUD, PLN, KES, TRY, INR) | For NFT checkout and Onramp, payment is always charged in USD or EUR but prices can be displayed as any other currency!
 - `title` (optional): Title of the payment link
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
@@ -315,12 +323,12 @@ $client = new TransVoucher([
   - `phone` (optional): Customer's phone number
   - `date_of_birth` (optional): Customer's date of birth (YYYY-MM-DD format)
   - `country_of_residence` (optional): Customer's country code (ISO format, e.g., 'US', 'GB')
-  - `state_of_residence` (optional): Required if country_of_residence is 'US', has to be empty for any other country
-  - `card_country_code` (optional): Prefill card country
-  - `card_city` (optional): Prefill card city
-  - `card_state_code` (optional): Prefill card state
-  - `card_post_code` (optional): Prefill card postal code
-  - `card_street` (optional): Prefill card street address
+  - `state_of_residence` (optional): US state short code alpha-2 - Required if country_of_residence is 'US', has to be dropped from the payload for any other country
+  - `card_country_code` (optional): Prefill card billing address country
+  - `card_city` (optional): Prefill card billing address city
+  - `card_state_code` (optional): Prefill card billing address state - US state short code alpha-2 - Required if country_of_residence is 'US', has to be dropped from the payload for any other country
+  - `card_post_code` (optional): Prefill card billing address postal code
+  - `card_street` (optional): Prefill card billing address street address
 - `metadata` (optional): Use this to identify the customer or payment session (returned in webhooks and API responses)
 - `custom_fields` (optional): Custom key-value pairs for additional data
 - `expires_at` (optional): ISO 8601 timestamp when payment link expires

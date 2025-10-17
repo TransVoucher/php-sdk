@@ -34,13 +34,24 @@ try {
             'email' => 'john@example.com',
             'phone' => '+11234567890',
             'date_of_birth' => '1990-01-01',
-            'country_of_residence' => 'US',
-            // required in case country_of_residence is "US":
+            'country_of_residence' => 'US', // if present, has to be a valid alpha-2 country short code
+
             'state_of_residence' => 'MT',
+            // rules for usage of "state_of_residence":
+            // - if present, has to be a valid US state short code (alpha-2 uppercase)
+            // - required if "country_of_residence" is "US" (we will ask for it if you don't prefill it)
+            // - has to be dropped (not be in the payload) when "country_of_residence" is not "US"
+
             // if you want to prefill card information
-            'card_country_code' => 'US',
+            'card_country_code' => 'US', // if present, has to be a valid alpha-2 country short code
             'card_city' => 'Montana',
+
             'card_state_code' => 'MT',
+            // rules for usage of "card_state_code":
+            // - if present, has to be a valid US state short code (alpha-2 uppercase)
+            // - required if "card_country_code" is "US" (we will ask for it if you don't prefill it)
+            // - has to be dropped (not be in the payload) when "card_country_code" is not "US"
+
             'card_post_code' => '12345',
             'card_street' => 'Street 123',
         ],
@@ -50,7 +61,7 @@ try {
             'order_id' => 'order_123',
             'product' => 'Digital Product'
         ],
-        'lang' => 'en'
+        'lang' => 'en' // the language for the payment page - possible values: en, es, fr, de, it, pt, ru, zh, ja, ko, tr
     ]);
 
     echo "Payment created successfully!\n";

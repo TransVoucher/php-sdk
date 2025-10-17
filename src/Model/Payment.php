@@ -141,9 +141,9 @@ class Payment
     /**
      * @var array|null Payment method information with keys:
      *                 - card_id: Card identifier
-     *                 - card_brand: Card brand (e.g., 'VISA', 'MASTERCARD')
-     *                 - payment_type: Payment type (e.g., '3ds_v2')
-     *                 - processed_through: Payment processor (e.g., 'safecharge')
+     *                 - card_brand: Card brand ('VISA', 'MASTERCARD', 'AMEX', 'JCB', 'DISCOVER')
+     *                 - payment_type: Payment type (e.g., '3ds_v2', 'non_3ds')
+     *                 - processed_through: Payment processor ('safecharge', 'ap_safecharge', 'gp_safecharge', 'worldpay')
      */
     public $payment_method;
 
@@ -329,7 +329,7 @@ class Payment
     }
 
     /**
-     * Get the card brand from payment method (e.g., 'VISA', 'MASTERCARD')
+     * Get the card brand from payment method ('VISA', 'MASTERCARD', 'AMEX', 'JCB', 'DISCOVER')
      *
      * @return string|null
      */
@@ -339,7 +339,7 @@ class Payment
     }
 
     /**
-     * Get the payment type from payment method (e.g., '3ds_v2')
+     * Get the payment type from payment method (e.g., '3ds_v2', 'non_3ds')
      *
      * @return string|null
      */
@@ -349,7 +349,7 @@ class Payment
     }
 
     /**
-     * Get the payment processor from payment method (e.g., 'safecharge')
+     * Get the payment processor from payment method ('safecharge', 'ap_safecharge', 'gp_safecharge', 'worldpay')
      *
      * @return string|null
      */
