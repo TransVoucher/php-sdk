@@ -238,6 +238,57 @@ class PaymentService
     }
 
     /**
+     * Get conversion rate for a network, commodity, and fiat currency
+     *
+     * @param string $network Network (e.g., 'polygon', 'bsc')
+     * @param string $commodity Commodity (e.g., 'USDT')
+     * @param string $fiatCurrency Fiat currency code (e.g., 'USD', 'EUR')
+     * @return array Conversion rate data
+     * @throws TransVoucherException
+     */
+    public function getConversionRate(string $network, string $commodity, string $fiatCurrency, string $paymentMethod = 'card'): array
+    {
+        $this->validateConversionRateParams($network, $commodity, $fiatCurrency);
+
+        $response = $this->client->get("/conversion-rate/{$network}/{$commodity}/{$fiatCurrency}/{$paymentMethod}");
+
+        if (!isset($response['data'])) {
+            throw new TransVoucherException('Invalid response format from API');
+        }
+
+        return $response['data'];
+    }
+
+    /**
+     * Validate parameters for getting conversion rate
+     *
+     * @param string $network
+     * @param string $commodity
+     * @param string $fiatCurrency
+     * @throws InvalidRequestException
+     */
+    private function validateConversionRateParams(string $network, string $commodity, string $fiatCurrency): void
+    {
+        // Validate network
+        $validNetworks = ['polygon', 'bsc'];
+        if (!in_array(strtolower($network), $validNetworks)) {
+            throw new InvalidRequestException('Network must be one of: ' . implode(', ', $validNetworks));
+        }
+
+        // Validate commodity
+        $validCommodities = ['USDT'];
+        if (!in_array(strtoupper($commodity), $validCommodities)) {
+            throw new InvalidRequestException('Commodity must be one of: ' . implode(', ', $validCommodities));
+        }
+
+        // Validate fiat currency
+        $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'TRY', 'INR'];
+        if (!in_array(strtoupper($fiatCurrency), $validCurrencies)) {
+            throw new InvalidRequestException('Fiat currency must be one of: ' . implode(', ', $validCurrencies));
+        }
+    }
+
+    /**
      * Check if a date string is valid (YYYY-MM-DD format)
      *
      * @param string $date
