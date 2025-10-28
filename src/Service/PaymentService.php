@@ -120,14 +120,30 @@ class PaymentService
      */
     private function validateCreateParams(array $params): void
     {
-        // Amount is required
-        if (!isset($params['amount'])) {
-            throw new InvalidRequestException('Amount is required');
+        // Check if dynamic pricing is enabled
+        $isPriceDynamic = isset($params['is_price_dynamic']) && $params['is_price_dynamic'] === true;
+
+        // Validate is_price_dynamic if provided
+        if (isset($params['is_price_dynamic']) && !is_bool($params['is_price_dynamic'])) {
+            throw new InvalidRequestException('is_price_dynamic must be a boolean');
         }
 
-        $amount = $params['amount'];
-        if (!is_numeric($amount) || $amount < 0.01) {
-            throw new InvalidRequestException('Amount must be a number greater than or equal to 0.01');
+        // Amount is required unless dynamic pricing is enabled
+        if (!$isPriceDynamic) {
+            if (!isset($params['amount'])) {
+                throw new InvalidRequestException('Amount is required');
+            }
+
+            $amount = $params['amount'];
+            if (!is_numeric($amount) || $amount < 0.01) {
+                throw new InvalidRequestException('Amount must be a number greater than or equal to 0.01');
+            }
+        } elseif (isset($params['amount'])) {
+            // If amount is provided with dynamic pricing, validate it anyway
+            $amount = $params['amount'];
+            if (!is_numeric($amount) || $amount < 0.01) {
+                throw new InvalidRequestException('Amount must be a number greater than or equal to 0.01');
+            }
         }
 
         // Validate currency if provided

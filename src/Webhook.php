@@ -28,7 +28,7 @@ class Webhook
      * Verify webhook signature
      *
      * @param string $payload Raw webhook payload
-     * @param string $signature Signature from X-TransVoucher-Signature header
+     * @param string $signature Signature from X-Webhook-Signature header
      * @return bool
      */
     public function verifySignature(string $payload, string $signature): bool
@@ -73,7 +73,7 @@ class Webhook
      * Verify and parse webhook
      *
      * @param string $payload Raw webhook payload
-     * @param string $signature Signature from X-TransVoucher-Signature header
+     * @param string $signature Signature from X-Webhook-Signature header
      * @return array
      * @throws TransVoucherException
      */

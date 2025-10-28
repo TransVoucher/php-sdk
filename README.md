@@ -336,6 +336,8 @@ $client = new TransVoucher([
   - `color` (optional): Primary theme color (hex format, e.g., '#7014f4')
 - `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko, tr)
 - `multiple_use` (optional): Boolean - if payment link is meant for one or multiple payments
+- `cancel_on_first_fail` (optional): Boolean - when true, payment link fails permanently after first failed attempt (default: false)
+- `is_price_dynamic` (optional): Boolean - when true, allows customers to set their own payment amount during checkout. The amount parameter becomes optional when this is enabled (default: false)
 - `customer_commission_percentage` (optional): Commission percentage charged to customer
 
 **Response - Payment Object:**
