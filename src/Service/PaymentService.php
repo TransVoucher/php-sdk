@@ -148,7 +148,7 @@ class PaymentService
 
         // Validate currency if provided
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'TRY', 'INR'];
+            $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'AED', 'TRY', 'INR'];
             if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
                 throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
             }
@@ -256,7 +256,7 @@ class PaymentService
     /**
      * Get conversion rate for a network, commodity, and fiat currency
      *
-     * @param string $network Network (e.g., 'polygon', 'bsc')
+     * @param string $network Network (e.g., 'POL', 'BSC')
      * @param string $commodity Commodity (e.g., 'USDT')
      * @param string $fiatCurrency Fiat currency code (e.g., 'USD', 'EUR')
      * @return array Conversion rate data
@@ -286,7 +286,7 @@ class PaymentService
     private function validateConversionRateParams(string $network, string $commodity, string $fiatCurrency): void
     {
         // Validate network
-        $validNetworks = ['polygon', 'bsc'];
+        $validNetworks = ['POL', 'BSC'];
         if (!in_array(strtolower($network), $validNetworks)) {
             throw new InvalidRequestException('Network must be one of: ' . implode(', ', $validNetworks));
         }
@@ -298,7 +298,7 @@ class PaymentService
         }
 
         // Validate fiat currency
-        $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'TRY', 'INR'];
+        $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'AED', 'TRY', 'INR'];
         if (!in_array(strtoupper($fiatCurrency), $validCurrencies)) {
             throw new InvalidRequestException('Fiat currency must be one of: ' . implode(', ', $validCurrencies));
         }

@@ -308,7 +308,7 @@ $client = new TransVoucher([
 **Request Parameters:**
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (required): Currency code (USD, EUR, NZD, AUD, PLN, KES, TRY, INR) | For NFT checkout and Onramp, payment is always charged in USD or EUR but prices can be displayed as any other currency!
+- `currency` (required): Currency code (USD, EUR, NZD, AUD, PLN, KES, AED, TRY, INR) | For NFT checkout and Onramp, payment is always charged in USD or EUR but prices can be displayed as any other currency!
 - `title` (optional): Title of the payment link
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)

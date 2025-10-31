@@ -78,7 +78,7 @@ class PaymentServiceTest extends TestCase
     public function testCreatePaymentValidatesCurrency()
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Currency must be one of: USD, EUR, NZD, AUD, PLN, KES, TRY, INR');
+        $this->expectExceptionMessage('Currency must be one of: USD, EUR, NZD, AUD, PLN, KES, AED, TRY, INR');
 
         $this->paymentService->create([
             'amount' => 100,
