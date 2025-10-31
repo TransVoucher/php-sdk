@@ -83,6 +83,11 @@ class Payment
     public $commodity_amount;
 
     /**
+     * @var float|null Amount of commodity settled to merchant wallets
+     */
+    public $settled_amount;
+
+    /**
      * @var string|null Payment status (pending, attempting, processing, completed, failed, expired, cancelled)
      */
     public $status;
@@ -177,6 +182,7 @@ class Payment
         $payment->fiat_currency = $data['fiat_currency'] ?? null;
         $payment->commodity = $data['commodity'] ?? null;
         $payment->commodity_amount = isset($data['commodity_amount']) ? (float) $data['commodity_amount'] : null;
+        $payment->settled_amount = isset($data['settled_amount']) ? (float) $data['settled_amount'] : null;
         $payment->status = $data['status'] ?? null;
         $payment->fail_reason = $data['fail_reason'] ?? null;
         $payment->created_at = $data['created_at'] ?? null;
@@ -217,6 +223,7 @@ class Payment
             'fiat_currency' => $this->fiat_currency,
             'commodity' => $this->commodity,
             'commodity_amount' => $this->commodity_amount,
+            'settled_amount' => $this->settled_amount,
             'status' => $this->status,
             'fail_reason' => $this->fail_reason,
             'created_at' => $this->created_at,
@@ -298,6 +305,11 @@ class Payment
     public function getCommodityAmount(): ?float
     {
         return $this->commodity_amount;
+    }
+
+    public function getSettledAmount(): ?float
+    {
+        return $this->settled_amount;
     }
 
     public function getStatus(): ?string
