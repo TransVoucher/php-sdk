@@ -373,6 +373,7 @@ $client = new TransVoucher([
   - `card_brand`: Card brand (e.g., 'VISA', 'MASTERCARD')
   - `payment_type`: Payment type (e.g., '3ds_v2')
   - `processed_through`: Payment processor (e.g., 'safecharge')
+- `blockchain_tx_hash`: Blockchain transaction hash for completed crypto transfers (string or null)
 
 ### Get Payment Status
 

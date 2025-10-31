@@ -36,6 +36,7 @@ class PaymentTest extends TestCase
             'processed_through' => 'safecharge',
         ],
         'multiple_use' => true,
+        'blockchain_tx_hash' => '0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef',
     ];
 
     public function testCanCreateFromArray()
@@ -61,6 +62,7 @@ class PaymentTest extends TestCase
         $this->assertEquals(['order_id' => '12345'], $payment->metadata);
         $this->assertEquals(['card_brand' => 'VISA', 'payment_type' => 'card', 'processed_through' => 'safecharge'], $payment->payment_method);
         $this->assertEquals(true, $payment->multiple_use);
+        $this->assertEquals('0x1234567890abcdef1234567890abcdef1234567890abcdef1234567890abcdef', $payment->blockchain_tx_hash);
     }
 
     public function testCanConvertToArray()
@@ -94,6 +96,7 @@ class PaymentTest extends TestCase
         $this->assertEquals($this->paymentData['amount'], $payment->getAmount());
         $this->assertEquals($this->paymentData['currency'], $payment->getCurrency());
         $this->assertEquals($this->paymentData['status'], $payment->getStatus());
+        $this->assertEquals($this->paymentData['blockchain_tx_hash'], $payment->getBlockchainTxHash());
     }
 
     public function testStatusCheckers()

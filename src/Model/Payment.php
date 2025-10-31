@@ -148,6 +148,11 @@ class Payment
     public $payment_method;
 
     /**
+     * @var string|null Blockchain transaction hash for completed crypto transfers
+     */
+    public $blockchain_tx_hash;
+
+    /**
      * Create a new Payment instance from API response data
      *
      * @param array $data
@@ -184,6 +189,7 @@ class Payment
         $payment->customer_details = $data['customer_details'] ?? null;
         $payment->metadata = $data['metadata'] ?? null;
         $payment->payment_method = $data['payment_method'] ?? null;
+        $payment->blockchain_tx_hash = $data['blockchain_tx_hash'] ?? null;
 
         return $payment;
     }
@@ -223,6 +229,7 @@ class Payment
             'customer_details' => $this->customer_details,
             'metadata' => $this->metadata,
             'payment_method' => $this->payment_method,
+            'blockchain_tx_hash' => $this->blockchain_tx_hash,
         ], function ($value) {
             return $value !== null;
         });
@@ -316,6 +323,16 @@ class Payment
     public function getPaymentMethod(): ?array
     {
         return $this->payment_method;
+    }
+
+    /**
+     * Get the blockchain transaction hash
+     *
+     * @return string|null
+     */
+    public function getBlockchainTxHash(): ?string
+    {
+        return $this->blockchain_tx_hash;
     }
 
     /**
