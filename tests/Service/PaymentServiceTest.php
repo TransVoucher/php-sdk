@@ -100,7 +100,7 @@ class PaymentServiceTest extends TestCase
     public function testCreatePaymentValidatesLanguage()
     {
         $this->expectException(InvalidRequestException::class);
-        $this->expectExceptionMessage('Language must be one of: en, es, fr, de, it, pt, ru, zh, ja, ko');
+        $this->expectExceptionMessage('Language must be one of: en, es, fr, de, it, pt, ru, zh, ja, ko, tr, ka');
 
         $this->paymentService->create([
             'amount' => 100,

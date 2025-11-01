@@ -334,7 +334,7 @@ $client = new TransVoucher([
 - `expires_at` (optional): ISO 8601 timestamp when payment link expires
 - `theme` (optional): UI theme customization
   - `color` (optional): Primary theme color (hex format, e.g., '#7014f4')
-- `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko, tr)
+- `lang` (optional): Language code (en, es, fr, de, it, pt, ru, zh, ja, ko, tr, ka)
 - `multiple_use` (optional): Boolean - if payment link is meant for one or multiple payments
 - `cancel_on_first_fail` (optional): Boolean - when true, payment link fails permanently after first failed attempt (default: false)
 - `is_price_dynamic` (optional): Boolean - when true, allows customers to set their own payment amount during checkout. The amount parameter becomes optional when this is enabled (default: false)

@@ -169,7 +169,7 @@ class PaymentService
 
         // Validate language if provided
         if (isset($params['lang'])) {
-            $validLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko', 'tr'];
+            $validLanguages = ['en', 'es', 'fr', 'de', 'it', 'pt', 'ru', 'zh', 'ja', 'ko', 'tr', 'ka'];
             if (!in_array($params['lang'], $validLanguages)) {
                 throw new InvalidRequestException('Language must be one of: ' . implode(', ', $validLanguages));
             }
