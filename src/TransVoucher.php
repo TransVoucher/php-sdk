@@ -3,12 +3,14 @@
 namespace TransVoucher;
 
 use TransVoucher\Service\PaymentService;
+use TransVoucher\Service\CurrencyService;
 use TransVoucher\Http\Client;
 
 /**
  * TransVoucher PHP SDK
- * 
+ *
  * @property PaymentService $payments
+ * @property CurrencyService $currencies
  */
 class TransVoucher
 {
@@ -23,6 +25,11 @@ class TransVoucher
      * @var PaymentService
      */
     private $payments;
+
+    /**
+     * @var CurrencyService
+     */
+    private $currencies;
 
     /**
      * @var array
@@ -77,6 +84,8 @@ class TransVoucher
         switch ($name) {
             case 'payments':
                 return $this->payments;
+            case 'currencies':
+                return $this->currencies;
             default:
                 throw new Exception\TransVoucherException("Unknown service: {$name}");
         }
@@ -157,5 +166,6 @@ class TransVoucher
     private function initializeServices(): void
     {
         $this->payments = new PaymentService($this->client);
+        $this->currencies = new CurrencyService($this->client);
     }
 } 

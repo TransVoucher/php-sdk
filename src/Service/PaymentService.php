@@ -146,11 +146,11 @@ class PaymentService
             }
         }
 
-        // Validate currency if provided
+        // Validate currency if provided - just check it's a non-empty string
+        // The API will validate against active currencies
         if (isset($params['currency'])) {
-            $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'AED', 'TRY', 'INR'];
-            if (!in_array(strtoupper($params['currency']), $validCurrencies)) {
-                throw new InvalidRequestException('Currency must be one of: ' . implode(', ', $validCurrencies));
+            if (!is_string($params['currency']) || empty(trim($params['currency']))) {
+                throw new InvalidRequestException('Currency must be a valid currency code');
             }
         }
 
@@ -285,22 +285,17 @@ class PaymentService
      */
     private function validateConversionRateParams(string $network, string $commodity, string $fiatCurrency): void
     {
-        // Validate network
-        $validNetworks = ['POL', 'BSC'];
-        if (!in_array(strtolower($network), $validNetworks)) {
-            throw new InvalidRequestException('Network must be one of: ' . implode(', ', $validNetworks));
+        // Basic validation - API will validate against active networks/commodities/currencies
+        if (empty(trim($network))) {
+            throw new InvalidRequestException('Network is required');
         }
 
-        // Validate commodity
-        $validCommodities = ['USDT'];
-        if (!in_array(strtoupper($commodity), $validCommodities)) {
-            throw new InvalidRequestException('Commodity must be one of: ' . implode(', ', $validCommodities));
+        if (empty(trim($commodity))) {
+            throw new InvalidRequestException('Commodity is required');
         }
 
-        // Validate fiat currency
-        $validCurrencies = ['USD', 'EUR', 'NZD', 'AUD', 'PLN', 'KES', 'AED', 'TRY', 'INR'];
-        if (!in_array(strtoupper($fiatCurrency), $validCurrencies)) {
-            throw new InvalidRequestException('Fiat currency must be one of: ' . implode(', ', $validCurrencies));
+        if (empty(trim($fiatCurrency))) {
+            throw new InvalidRequestException('Fiat currency is required');
         }
     }
 

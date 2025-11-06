@@ -161,6 +161,20 @@ if ($payments->has_more) {
 }
 ```
 
+### Get Available Currencies
+
+```php
+// Get all supported currencies
+$currencies = $transvoucher->currencies->all();
+
+foreach ($currencies as $currency) {
+    echo "{$currency->short_code}: {$currency->name} ({$currency->symbol})\n";
+}
+
+// Use in a payment form to build a currency dropdown
+$currenciesArray = $transvoucher->currencies->allAsArray();
+```
+
 ## Webhook Handling
 
 ### Verify Webhook Signature
@@ -308,7 +322,7 @@ $client = new TransVoucher([
 **Request Parameters:**
 
 - `amount` (required): Payment amount (minimum 0.01)
-- `currency` (required): Currency code (USD, EUR, NZD, AUD, PLN, KES, AED, TRY, INR) | For NFT checkout and Onramp, payment is always charged in USD or EUR but prices can be displayed as any other currency!
+- `currency` (required): Currency code - see [Get Available Currencies](#get-available-currencies) for the list of supported currencies. For NFT checkout and Onramp, payment is always charged in USD or EUR but prices can be displayed as any of the listed currencies!
 - `title` (optional): Title of the payment link
 - `description` (optional): Description of the payment
 - `redirect_url` (optional): Success redirect URL (uses sales channel configuration if empty)
@@ -394,6 +408,45 @@ $payment = $transvoucher->payments->paymentLinkStatus('...');
 ```
 
 Returns a Payment object with all the fields listed above.
+
+### Get Available Currencies
+
+Get all active processing currencies supported by the TransVoucher API.
+
+```php
+// Get all currencies as Currency objects
+$currencies = $transvoucher->currencies->all();
+
+foreach ($currencies as $currency) {
+    echo $currency->getShortCode() . ': ' . $currency->getName();
+    echo ' (' . $currency->getSymbol() . ')' . PHP_EOL;
+    echo 'USD Value: ' . $currency->getCurrentUsdValue() . PHP_EOL;
+
+    if ($currency->isProcessedViaAnotherCurrency()) {
+        echo 'Processed via: ' . $currency->getProcessedViaCurrencyCode() . PHP_EOL;
+    }
+}
+
+// Or get as arrays for easier manipulation
+$currenciesArray = $transvoucher->currencies->allAsArray();
+```
+
+**Response - Currency Object:**
+
+- `short_code`: Currency code (e.g., 'USD', 'EUR', 'GBP')
+- `name`: Currency full name (e.g., 'US Dollar')
+- `symbol`: Currency symbol (e.g., '$', '€', '£')
+- `current_usd_value`: Current USD exchange rate value
+- `processed_via_currency_code`: Currency code this currency is processed via (null if processed directly)
+
+**Currency Object Methods:**
+
+- `getShortCode()`: Get the currency code
+- `getName()`: Get the currency name
+- `getSymbol()`: Get the currency symbol
+- `getCurrentUsdValue()`: Get the current USD exchange rate value
+- `getProcessedViaCurrencyCode()`: Get the currency code this currency is processed via
+- `isProcessedViaAnotherCurrency()`: Check if this currency is processed via another currency
 
 ## Support
 

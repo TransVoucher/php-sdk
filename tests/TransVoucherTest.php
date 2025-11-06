@@ -76,8 +76,20 @@ class TransVoucherTest extends TestCase
         ];
 
         $transvoucher = new TransVoucher($config);
-        
+
         $this->assertInstanceOf(\TransVoucher\Service\PaymentService::class, $transvoucher->payments);
+    }
+
+    public function testCanAccessCurrenciesService()
+    {
+        $config = [
+            'api_key' => 'test-key',
+            'api_secret' => 'test-secret'
+        ];
+
+        $transvoucher = new TransVoucher($config);
+
+        $this->assertInstanceOf(\TransVoucher\Service\CurrencyService::class, $transvoucher->currencies);
     }
 
     public function testThrowsExceptionForUnknownService()
@@ -88,10 +100,10 @@ class TransVoucherTest extends TestCase
         ];
 
         $transvoucher = new TransVoucher($config);
-        
+
         $this->expectException(TransVoucherException::class);
         $this->expectExceptionMessage('Unknown service: unknown');
-        
+
         $transvoucher->unknown;
     }
 } 
