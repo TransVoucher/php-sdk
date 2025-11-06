@@ -8,9 +8,9 @@ use TransVoucher\Exception\TransVoucherException;
 try {
     // Initialize TransVoucher client
     $transvoucher = new TransVoucher([
-        'api_key' => 'tvc_etKvEUFAKX1AxbuEIgtvzA0wW4dj436o',
-        'api_secret' => 'tvcs_yAzhKMDyem0F4E3vPQbSqRuewiAxm8UOU99ckhlEoMfx8zvb',
-        'environment' => 'production'
+        'api_key' => 'your-api-key',
+        'api_secret' => 'your-api-secret',
+        'environment' => 'sandbox'
     ]);
 
     echo "TransVoucher - Get Conversion Rates Example\n";
