@@ -14,7 +14,7 @@ use TransVoucher\Http\Client;
  */
 class TransVoucher
 {
-    public const string API_VERSION = 'v1.0';
+    public const API_VERSION = 'v1.0';
 
     /**
      * @var Client
