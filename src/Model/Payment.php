@@ -48,6 +48,11 @@ class Payment
     public $payment_url;
 
     /**
+     * @var string|null Embeddable payment URL with transparent background for iframe embedding
+     */
+    public $embed_url;
+
+    /**
      * @var float|null Amount in fiat currency
      */
     public $amount;
@@ -175,6 +180,7 @@ class Payment
         $payment->payment_link_id = $data['payment_link_id'] ?? null;
         $payment->flow_type = $data['flow_type'] ?? null;
         $payment->payment_url = $data['payment_url'] ?? null;
+        $payment->embed_url = $data['embed_url'] ?? null;
         $payment->amount = isset($data['amount']) ? (float) $data['amount'] : null;
         $payment->fiat_base_amount = isset($data['fiat_base_amount']) ? (float) $data['fiat_base_amount'] : null;
         $payment->fiat_total_amount = isset($data['fiat_total_amount']) ? (float) $data['fiat_total_amount'] : null;
@@ -216,6 +222,7 @@ class Payment
             'payment_link_id' => $this->payment_link_id,
             'flow_type' => $this->flow_type,
             'payment_url' => $this->payment_url,
+            'embed_url' => $this->embed_url,
             'amount' => $this->amount,
             'fiat_base_amount' => $this->fiat_base_amount,
             'fiat_total_amount' => $this->fiat_total_amount,
@@ -270,6 +277,16 @@ class Payment
     public function getPaymentUrl(): ?string
     {
         return $this->payment_url;
+    }
+
+    /**
+     * Get the embeddable payment URL with transparent background for iframe embedding
+     *
+     * @return string|null
+     */
+    public function getEmbedUrl(): ?string
+    {
+        return $this->embed_url;
     }
 
     public function getAmount(): ?float

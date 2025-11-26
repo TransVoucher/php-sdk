@@ -47,6 +47,12 @@ class Webhook
         // Compute expected signature
         $expectedSignature = hash_hmac('sha256', $payload, $this->secret);
 
+        // Debug logging
+        error_log('TransVoucher SDK Signature Debug:');
+        error_log('Signature received (after prefix removal): ' . $signature);
+        error_log('Signature computed: ' . $expectedSignature);
+        error_log('Match: ' . ($expectedSignature === $signature ? 'YES' : 'NO'));
+
         // Use timing-safe comparison
         return hash_equals($expectedSignature, $signature);
     }

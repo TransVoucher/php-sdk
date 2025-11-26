@@ -51,6 +51,9 @@ $payment = $transvoucher->payments->create([
 
 // Redirect to payment page
 header('Location: ' . $payment->payment_url);
+
+// OR for iframe embedding (fullscreen with transparent background):
+// echo '<iframe src="' . $payment->embed_url . '" style="position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; border: none; z-index: 9999;" allowpaymentrequest></iframe>';
 exit;
 ```
 
@@ -189,7 +192,7 @@ use TransVoucher\Webhook;
 $webhook = new Webhook('your-webhook-secret');
 
 $payload = file_get_contents('php://input');
-$signature = $_SERVER['HTTP_X_TRANSVOUCHER_SIGNATURE'] ?? '';
+$signature = $_SERVER['HTTP_X_WEBHOOK_SIGNATURE'] ?? '';
 
 if ($webhook->verifySignature($payload, $signature)) {
     $event = json_decode($payload, true);
