@@ -453,7 +453,7 @@ $currenciesArray = $transvoucher->currencies->allAsArray();
 
 ## Support
 
-- **API Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation)
+- **API Documentation**: [https://transvoucher.com/api-documentation](https://transvoucher.com/api-documentation) (also available as [OpenAPI spec](https://docs.transvoucher.com/))
 - **Service Availability**: [https://transvoucher.com/api-documentation/service-availability](https://transvoucher.com/api-documentation/service-availability)
 - **Telegram**: @TransVoucher_Support_Bot
 - **Email**: developers@transvoucher.com
