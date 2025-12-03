@@ -4,6 +4,8 @@ namespace TransVoucher;
 
 use TransVoucher\Service\PaymentService;
 use TransVoucher\Service\CurrencyService;
+use TransVoucher\Service\NetworkService;
+use TransVoucher\Service\CommodityService;
 use TransVoucher\Http\Client;
 
 /**
@@ -11,6 +13,8 @@ use TransVoucher\Http\Client;
  *
  * @property PaymentService $payments
  * @property CurrencyService $currencies
+ * @property NetworkService $networks
+ * @property CommodityService $commodities
  */
 class TransVoucher
 {
@@ -30,6 +34,16 @@ class TransVoucher
      * @var CurrencyService
      */
     private $currencies;
+
+    /**
+     * @var NetworkService
+     */
+    private $networks;
+
+    /**
+     * @var CommodityService
+     */
+    private $commodities;
 
     /**
      * @var array
@@ -86,6 +100,10 @@ class TransVoucher
                 return $this->payments;
             case 'currencies':
                 return $this->currencies;
+            case 'networks':
+                return $this->networks;
+            case 'commodities':
+                return $this->commodities;
             default:
                 throw new Exception\TransVoucherException("Unknown service: {$name}");
         }
@@ -167,5 +185,7 @@ class TransVoucher
     {
         $this->payments = new PaymentService($this->client);
         $this->currencies = new CurrencyService($this->client);
+        $this->networks = new NetworkService($this->client);
+        $this->commodities = new CommodityService($this->client);
     }
 } 
